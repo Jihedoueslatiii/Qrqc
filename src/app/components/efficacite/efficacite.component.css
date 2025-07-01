@@ -1,0 +1,116 @@
+.efficacite-wrapper {
+  background-color: #f4f7fa;
+  min-height: calc(100vh - 60px); /* pour tenir compte d'une topbar de 60px */
+  padding: 1.25rem 1rem;
+  margin-left: 240px; /* pour compenser la sidebar */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+    margin-top: 50px; /* pour laisser de l'espace sous la topbar */
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+}
+
+thead {
+  background-color: #e0e7ff;
+  color: #1e3a8a;
+  font-weight: bold;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #eaeaea;
+}
+
+td {
+  color: #333;
+}
+
+tbody tr:hover {
+  background-color: #f0f4ff;
+  transition: background 0.2s ease-in-out;
+}
+
+td.resultat {
+  font-weight: 600;
+}
+
+td.resultat.good {
+  color: #2e7d32;
+}
+
+td.resultat.bad {
+  color: #c62828;
+}
+
+td.objectif {
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.footer-info {
+  margin-top: 1rem;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+}
+h3 {
+  font-size: 0.85rem;
+  color: #6b7280; /* gray-500 */
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.kpi-title-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center horizontally */
+  gap: 0.75rem;
+  flex-wrap: wrap; /* responsive */
+}
+
+.kpi-title-container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e3a8a; /* Indigo 900 */
+  margin: 0;
+}
+
+.kpi-title-container button {
+  font-size: 1.25rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #2563eb; /* Blue 600 */
+  transition: color 0.2s ease;
+}
+
+.kpi-title-container button:hover {
+  color: #1d4ed8; /* Blue 700 */
+}
+
+.kpi-title-container input {
+  font-size: 1.125rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #d1d5db; /* Gray 300 */
+  border-radius: 0.5rem;
+  min-width: 280px;
+  max-width: 400px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}

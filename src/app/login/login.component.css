@@ -1,0 +1,454 @@
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+* {
+	box-sizing: border-box;
+}
+.auth-background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional: make overlays semi-transparent */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+}
+
+/* Center the container */
+.container {
+  width: 900px; /* Increase width */
+  height: 600px; /* Increase height */
+  margin: 50px auto; /* Center it horizontally and add space from top */
+  padding: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+/* Adjust form containers */
+.form-container {
+  padding: 50px;
+}
+
+/* Adjust button styles */
+button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Center footer */
+footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+body {
+	background: #f6f5f7;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	font-family: 'Montserrat', sans-serif;
+	height: 100vh;
+	margin: -20px 0 50px;
+}
+
+h1 {
+	font-weight: bold;
+	margin: 0;
+}
+
+h2 {
+	text-align: center;
+}
+mat-form-field, input {
+	width: 100%; /* Cette règle permet aux champs de prendre toute la largeur disponible */
+  }
+  
+  mat-form-field {
+	margin-bottom: -19px; /* Ajoute un peu d'espace en dessous des champs */
+  }
+  
+  
+  input {
+	background-color: #eee;
+	border: none;
+	padding: 12px 15px;
+	margin: 8px 0;
+	width: 100%;
+	font-size: 14px;
+  }  
+
+p {
+	font-size: 14px;
+	font-weight: 100;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	margin: 20px 0 30px;
+}
+
+span {
+	font-size: 12px;
+}
+
+a {
+	color: #333;
+	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
+}
+
+button {
+	border-radius: 20px;
+	border: 1px solid #0f0691;
+	background-color: #0f0691;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: transform 80ms ease-in;
+}
+
+button:active {
+	transform: scale(0.95);
+}
+
+button:focus {
+	outline: none;
+}
+
+button.ghost {
+	background-color: transparent;
+	border-color: #FFFFFF;
+}
+
+/* Ajoutez ceci dans votre fichier CSS global (styles.css ou styles.scss) */
+.success-snackbar {
+	background-color: #4caf50; /* Vert */
+	color: white;
+  }
+  
+  .error-snackbar {
+	background-color: #f44336; /* Rouge */
+	color: white;
+  }
+  
+form {
+	background-color: #FFFFFF;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 50px;
+	height: 100%;
+	text-align: center;
+}
+
+input {
+	background-color: #eee;
+	border: none;
+	padding: 12px 15px;
+	margin: 8px 0;
+	width: 100%;
+}
+
+.container {
+	background-color: #fff;
+	border-radius: 10px;
+  	box-shadow: 0 14px 28px rgba(0,0,0,0.25),
+			0 10px 10px rgba(0,0,0,0.22);
+	position: relative;
+	overflow: hidden;
+	width: 768px;
+	max-width: 100%;
+	min-height: 480px;
+}
+
+.form-container {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container {
+	left: 0;
+	width: 50%;
+	z-index: 2;
+}
+
+.container.right-panel-active .sign-in-container {
+	transform: translateX(100%);
+}
+
+.sign-up-container {
+	left: 0;
+	width: 50%;
+	opacity: 0;
+	z-index: 1;
+}
+
+.container.right-panel-active .sign-up-container {
+	transform: translateX(100%);
+	opacity: 1;
+	z-index: 5;
+	animation: show 0.6s;
+}
+
+@keyframes show {
+	0%, 49.99% {
+		opacity: 0;
+		z-index: 1;
+	}
+
+	50%, 100% {
+		opacity: 1;
+		z-index: 5;
+	}
+}
+
+.overlay-container {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 50%;
+	height: 100%;
+	overflow: hidden;
+	transition: transform 0.6s ease-in-out;
+	z-index: 100;
+}
+
+.container.right-panel-active .overlay-container{
+	transform: translateX(-100%);
+}
+
+.overlay {
+	background: #3030d9;
+	background: -webkit-linear-gradient(to right, #0f0691, #045bff);
+	background: linear-gradient(to right, #0f0691, #045bff);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 0 0;
+	color: #FFFFFF;
+	/* keep the rest unchanged */
+
+	position: relative;
+	left: -100%;
+	height: 100%;
+	width: 200%;
+  	transform: translateX(0);
+	transition: transform 0.6s ease-in-out;
+}
+
+.container.right-panel-active .overlay {
+  	transform: translateX(50%);
+}
+.logo-container {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: auto;
+  z-index: 110; /* Above forms */
+}
+
+.logo-container img {
+  width: 100%;
+  height: auto;
+}
+
+
+.overlay-panel {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 40px;
+	text-align: center;
+	top: 0;
+	height: 100%;
+	width: 50%;
+	transform: translateX(0);
+	transition: transform 0.6s ease-in-out;
+}
+
+.overlay-left {
+	transform: translateX(-20%);
+}
+
+.container.right-panel-active .overlay-left {
+	transform: translateX(0);
+}
+
+.overlay-right {
+	right: 0;
+	transform: translateX(0);
+}
+
+.container.right-panel-active .overlay-right {
+	transform: translateX(20%);
+}
+
+.social-container {
+	margin: 20px 0;
+}
+
+.social-container a {
+	border: 1px solid #DDDDDD;
+	border-radius: 50%;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 5px;
+	height: 40px;
+	width: 40px;
+}
+
+footer {
+    background-color: #222;
+    color: #fff;
+    font-size: 14px;
+    bottom: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 999;
+}
+
+footer p {
+    margin: 10px 0;
+}
+
+footer i {
+    color: red;
+}
+
+footer a {
+    color: #3c97bf;
+    text-decoration: none;
+}
+.hidden {
+	display: none;
+  }
+
+  /* Add these styles to your existing login.component.css */
+
+/* Error styling for form inputs */
+input.error {
+  border: 2px solid #ff4757 !important;
+  background-color: #fff5f5;
+}
+
+.error-message {
+  color: #ff4757;
+  font-size: 12px;
+  margin-top: -15px;
+  margin-bottom: 10px;
+  text-align: left;
+  padding-left: 5px;
+}
+
+/* Role select styling */
+.role-select {
+  background-color: #eee;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.role-select:focus {
+  background-color: #ddd;
+}
+
+/* Loading button state */
+button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Form Validation Feedback */
+input {
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #3498db; /* nice blue on focus */
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+input:valid {
+  border-color: #27ae60; /* green border when valid */
+  box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
+}
+
+input:invalid:not(:focus):not(:placeholder-shown) {
+  border-color: #ff4757; /* red border when invalid */
+  box-shadow: 0 0 5px rgba(255, 71, 87, 0.6);
+}
+
+/* Error message style */
+.error-message {
+  color: #ff4757;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* smooth fade in */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Show error message only if input is invalid */
+input:invalid:not(:focus):not(:placeholder-shown) + .error-message {
+  opacity: 1;
+  height: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  input {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .error-message {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+}

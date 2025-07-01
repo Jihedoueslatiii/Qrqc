@@ -1,0 +1,102 @@
+<app-bar></app-bar>
+<div class="overflow-auto p-4">
+
+<div class="kpi-title-container mb-4 flex items-center gap-2">
+  <ng-container *ngIf="!editingTitle; else editTitleTpl">
+    <h2 class="text-xl font-semibold">{{ kpiTitle }}</h2>
+    <button (click)="editTitle()" title="Edit title" class="text-blue-600 hover:text-blue-800">
+      ✏️
+    </button>
+  </ng-container>
+
+  <ng-template #editTitleTpl>
+    <input
+      [(ngModel)]="kpiTitle"
+      class="border border-gray-300 rounded px-2 py-1 text-lg"
+      (keydown.enter)="saveTitle()"
+      (blur)="saveTitle()"
+      autofocus
+    />
+  </ng-template>
+</div>
+
+
+  <!-- Your existing table -->
+  <table class="border-collapse border border-gray-300 w-full min-w-[600px]">
+    <thead>
+      <tr>
+        <th class="border border-gray-300 p-2 bg-gray-100"></th>
+        <!-- Change *ngFor to pagedOTDs -->
+        <th *ngFor="let otd of pagedOTDs; let i = index" class="border border-gray-300 p-2 text-center relative">
+          <div>
+            OTD {{ currentPage * columnsPerPage + i + 1 }}
+            <button (click)="deleteOTD(otd)" 
+                    title="Delete this OTD"
+                    class="delete-btn"
+                    type="button">
+              ✖
+            </button>
+          </div>
+        </th>
+        <th class="border border-gray-300 p-2 text-center bg-green-100 cursor-pointer select-none" (click)="addNewColumn()">
+          ➕ Add
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td class="border border-gray-300 p-2 font-semibold bg-gray-50">Semaine</td>
+        <td *ngFor="let otd of pagedOTDs" class="border border-gray-300 p-2">
+          <input type="text" [(ngModel)]="otd.semaine" (change)="updateOTD(otd)" class="w-full border rounded px-1 py-0.5" />
+        </td>
+        <td class="border border-gray-300 p-2"></td>
+      </tr>
+
+      <tr>
+        <td class="border border-gray-300 p-2 font-semibold bg-gray-50">Réalisés</td>
+        <td *ngFor="let otd of pagedOTDs" class="border border-gray-300 p-2">
+          <input type="number" [(ngModel)]="otd.realises" (change)="updateOTD(otd)" class="w-full border rounded px-1 py-0.5" />
+        </td>
+        <td class="border border-gray-300 p-2"></td>
+      </tr>
+
+      <tr>
+        <td class="border border-gray-300 p-2 font-semibold bg-gray-50">Backlog</td>
+        <td *ngFor="let otd of pagedOTDs" class="border border-gray-300 p-2">
+          <input type="number" [(ngModel)]="otd.backlog" (change)="updateOTD(otd)" class="w-full border rounded px-1 py-0.5" />
+        </td>
+        <td class="border border-gray-300 p-2"></td>
+      </tr>
+       <tr>
+    <td class="border border-gray-300 p-2 font-semibold bg-gray-50">Objectif (%)</td>
+    <td *ngFor="let otd of pagedOTDs" class="border border-gray-300 p-2 text-center">
+      95
+    </td>
+    <td class="border border-gray-300 p-2"></td>
+  </tr>
+
+      <tr>
+        <td class="border border-gray-300 p-2 font-semibold bg-gray-50">Taux (%)</td>
+        <td *ngFor="let otd of pagedOTDs" class="border border-gray-300 p-2 text-center">
+          {{ otd.tauxRealisation | number:'1.0-2' }}
+        </td>
+        <td class="border border-gray-300 p-2"></td>
+      </tr>
+    </tbody>
+  </table>
+ <div class="pagination-controls mb-2 flex justify-center gap-4">
+    <button (click)="prevPage()" [disabled]="currentPage === 0"
+      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
+      ‹ Prev
+    </button>
+
+    <span>Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+
+    <button (click)="nextPage()" 
+      [disabled]="(currentPage + 1) * columnsPerPage >= otds.length"
+      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
+      Next ›
+    </button>
+  </div>
+</div>

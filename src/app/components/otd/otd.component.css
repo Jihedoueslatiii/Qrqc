@@ -1,0 +1,179 @@
+/* Container scroll + center table horizontally */
+div.overflow-auto {
+  /* Full width minus left sidebar */
+  width: calc(100% - 360px);
+  max-width: calc(100% - 360px);
+  overflow-x: auto;
+  padding: 1rem 1rem 1rem 1rem;
+  margin-top: 4rem; /* space below top bar */
+
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+
+  display: flex;
+  justify-content: center; /* center table horizontally */
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  /* Optional: horizontally center the scroll container */
+  margin-left: 360px; /* push container right to avoid sidebar */
+  box-sizing: border-box;
+}
+
+/* Pagination controls container */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+/* Pagination buttons */
+.pagination-controls button {
+  padding: 0.3rem 0.8rem;
+  background-color: #e5e7eb; /* gray-200 */
+  border: 1px solid #9ca3af; /* gray-400 */
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Page info text */
+.pagination-controls span {
+  align-self: center;
+  font-weight: 600;
+  color: #374151; /* gray-700 */
+}
+
+/* Table basics */
+table {
+  width: auto;          /* shrink to content */
+  min-width: 500px;     /* prevent too narrow */
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  /* max-width: 100%; optional if you want table to shrink on small screens */
+}
+
+/* Table borders */
+th, td {
+  border: 1px solid #d1d5db; /* cool gray border */
+  padding: 0.3rem 0.5rem;     /* reduced padding */
+  vertical-align: middle;
+}
+
+/* Left column headers */
+td:first-child, th:first-child {
+  background-color: #f3f4f6; /* very light gray */
+  font-weight: 600;
+  width: 110px;             /* narrower width */
+  white-space: nowrap;
+}
+
+/* Header row background */
+thead tr th {
+  background-color: #e5e7eb; /* light gray */
+  text-align: center;
+  position: relative;
+}
+
+/* Delete button in header */
+th .delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  color: #dc2626; /* red-600 */
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+th .delete-btn:hover {
+  background-color: #ef4444; /* red-500 */
+  color: white;
+}
+
+/* Add button cell styling */
+thead tr th:last-child {
+  background-color: #bbf7d0; /* green-200 */
+  cursor: pointer;
+  user-select: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #15803d; /* green-700 */
+  transition: background-color 0.2s ease;
+}
+
+thead tr th:last-child:hover {
+  background-color: #86efac; /* green-300 */
+}
+
+/* Inputs styling */
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #9ca3af; /* gray-400 */
+  border-radius: 0.2rem;
+  padding: 0.15rem 0.3rem;
+  font-size: 0.85rem;
+  transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 3px 1px rgba(37, 99, 235, 0.5);
+}
+
+/* Align tauxRealisation column text center */
+tbody tr:last-child td {
+  text-align: center;
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+}
+
+/* Responsive: horizontal scroll container */
+@media (max-width: 1024px) {
+  div.overflow-auto {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+.kpi-title-container h2 {
+  margin: 0;
+}
+
+.kpi-title-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+}

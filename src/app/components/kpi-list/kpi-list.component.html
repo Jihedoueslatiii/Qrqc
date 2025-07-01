@@ -1,0 +1,97 @@
+<app-bar></app-bar>
+<div class="container">
+    <!-- Bouton pour ouvrir la modale -->
+<button class="btn btn-success mb-3" (click)="showAddKpiModal = true">➕ Ajouter un KPI</button>
+
+<!-- Modal pour ajouter un KPI -->
+<!-- Modal pour ajouter un KPI -->
+<div *ngIf="showAddKpiModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Ajouter un nouveau KPI</h3>
+
+    <label>Nom du KPI:</label>
+    <input class="form-control mb-2" [(ngModel)]="newKpi.kpi" />
+
+    <h5 class="mt-3">🎯 Module Coût</h5>
+    <label>Pilote:</label>
+    <input class="form-control mb-2" [(ngModel)]="newKpi.cout.pilote" />
+    <label>Objectif (%):</label>
+    <input class="form-control mb-2" type="number" [(ngModel)]="newKpi.cout.objectif" />
+
+    <h5 class="mt-3">⏱️ Module Délai</h5>
+    <label>Pilote:</label>
+    <input class="form-control mb-2" [(ngModel)]="newKpi.delai.pilote" />
+    <label>Objectif (%):</label>
+    <input class="form-control mb-2" type="number" [(ngModel)]="newKpi.delai.objectif" />
+
+    <h5 class="mt-3">✅ Module Qualité</h5>
+    <label>Pilote:</label>
+    <input class="form-control mb-2" [(ngModel)]="newKpi.qualite.pilote" />
+    <label>Objectif (%):</label>
+    <input class="form-control mb-2" type="number" [(ngModel)]="newKpi.qualite.objectif" />
+
+    <div class="modal-actions mt-3">
+      <button class="btn btn-secondary" (click)="showAddKpiModal = false">Annuler</button>
+      <button class="btn btn-primary" (click)="addNewKpi()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+
+  <h2>Liste des Programmes</h2>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">Chargement...</div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="form-group">
+      <label for="filterKPI">Filtrer par Programmes</label>
+      <input
+        id="filterKPI"
+        type="text"
+        class="form-control"
+        [(ngModel)]="filterKPI"
+        (input)="applyFilters()"
+        placeholder="Rechercher un KPI..."
+      />
+    </div>
+    <div class="form-group">
+      <label for="filterPilote">Filtrer par Pilote</label>
+      <input
+        id="filterPilote"
+        type="text"
+        class="form-control"
+        [(ngModel)]="filterPilote"
+        (input)="applyFilters()"
+        placeholder="Rechercher un pilote..."
+      />
+    </div>
+    <button class="btn btn-secondary" (click)="clearFilters()">Effacer les filtres</button>
+    <button class="btn btn-primary" (click)="exportToExcel()">Exporter en Excel</button>
+  </div>
+
+  <!-- KPI Table -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th (click)="toggleSort('kpi')">KPI {{ sortField === 'kpi' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
+        <th (click)="toggleSort('pilote')">Pilote {{ sortField === 'pilote' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
+        <th (click)="toggleSort('objectif')">Objectif {{ sortField === 'objectif' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let kpi of filteredKpis">
+        <td>{{ kpi.kpi }}</td>
+        <td>{{ kpi.pilote }}</td>
+        <td>{{ kpi.objectif }}%</td>
+      </tr>
+      <tr *ngIf="filteredKpis.length === 0 && !loading">
+        <td colspan="3" class="text-center">Aucun KPI trouvé</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

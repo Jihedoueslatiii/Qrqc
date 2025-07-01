@@ -1,0 +1,453 @@
+/* Main Content Wrapper */
+.main-content-wrapper {
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f0f4ff, #fef9f5);
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  
+  /* Add spacing for sidebar and topbar */
+  margin-left: 240px; /* Adjust based on your sidebar width */
+  margin-top: 70px;   /* Adjust based on your topbar height */
+}
+
+/* Loading Spinner Style */
+.loading-container {
+  text-align: center;
+  font-size: 1.3rem;
+  color: #475569;
+  font-weight: 500;
+  padding: 3rem 0;
+}
+
+/* Grid Layout for Cards */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.8rem;
+  margin-top: 1rem;
+}
+
+/* Card Component */
+.analyse-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1.8rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 6px solid #6366f1;
+  position: relative;
+}
+
+.analyse-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Text Content Styling */
+.analyse-content p {
+  margin: 0.4rem 0;
+  color: #374151;
+  font-size: 0.98rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.analyse-content strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* Indicateur Emphasis */
+.indicateur {
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* Sticky Note for Plan d'Action */
+.sticky-note {
+  background-color: #fef3c7;
+  border: 2px dashed #fbbf24;
+  padding: 1.2rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(255, 200, 0, 0.2);
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sticky-note .pin {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.sticky-note h4 {
+  margin-bottom: 0.7rem;
+  color: #92400e;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Plan Action Text */
+.sticky-note p {
+  font-size: 0.95rem;
+  margin: 0.3rem 0;
+  color: #78350f;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-en-cours {
+  background-color: #fde68a;
+  color: #92400e;
+}
+.delai-kpi-title {
+  padding: 30px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1f497d;
+  text-align: center;
+  margin: 30px 0 40px 0;
+  user-select: none;
+  letter-spacing: 0.05em;
+  text-shadow: 1px 1px 3px rgba(31, 73, 125, 0.3);
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInDown 0.6s forwards ease-out;
+}
+
+@keyframes fadeInDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.status-termine {
+  background-color: #bbf7d0;
+  color: #065f46;
+}
+
+.status-en-retard {
+  background-color: #fecaca;
+  color: #7f1d1d;
+}
+
+/* No Plan Message */
+.no-plan {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  margin-top: 3rem;
+}
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Loading */
+.loading-container {
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 20px 0;
+  color: #666;
+}
+
+/* Add Analyse Form */
+.add-analyse-form {
+  background: #f5f7fa;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.05);
+}
+
+.add-analyse-form h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.add-analyse-form h4 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #34495e;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-row label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.form-row input,
+.form-row select {
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.btn-submit {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.btn-submit:disabled {
+  background-color: #8cb5e3;
+  cursor: not-allowed;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Cards container */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+/* Analyse card */
+.analyse-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.analyse-card:hover {
+  box-shadow: 0 6px 12px rgb(0 0 0 / 0.15);
+}
+
+.analyse-content p,
+.sticky-note p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.indicateur {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Sticky note style */
+.sticky-note {
+  background: #fff7e6;
+  border-left: 6px solid #f1c40f;
+  padding: 10px 15px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.sticky-note .pin {
+  width: 14px;
+  height: 14px;
+  background: #f39c12;
+  border-radius: 50%;
+  position: absolute;
+  top: -7px;
+  left: 10px;
+  box-shadow: 0 0 5px rgba(243, 156, 18, 0.6);
+}
+
+/* Status badge */
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+}
+
+.status-en-cours {
+  background-color: #e67e22; /* orange */
+}
+
+.status-termine {
+  background-color: #2980b9; /* blue */
+}
+
+.status-en-retard {
+  background-color: #27ae60; /* green */
+}
+
+/* No plan message */
+.no-plan {
+  font-style: italic;
+  color: #888;
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #777;
+  margin-top: 40px;
+}
+/* Modal backdrop covers the whole screen with semi-transparent black */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Modal container centered on screen */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  padding: 20px 30px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Prevent clicks inside modal from closing it */
+.modal-content {
+  position: relative;
+}
+
+/* Form rows styling */
+.form-row {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form-row input,
+.form-row select {
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: #007bff;
+}
+
+/* Buttons */
+.btn-submit {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.btn-submit:disabled {
+  background-color: #8cb5e3;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #999;
+}

@@ -1,0 +1,160 @@
+<app-bar></app-bar>
+<div class="main-content">
+  <h1 class="delai-kpi-title">📊Qualité KPI</h1>
+
+  <!-- Loading & Error -->
+  <div *ngIf="loading" class="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- Floating Average KPI Box -->
+  <div
+    class="floating-average-box"
+    cdkDrag
+    *ngIf="showAverageBox"
+    (cdkDragStarted)="dragging = true"
+    (cdkDragEnded)="dragging = false"
+  >
+    <button class="close-btn" (click)="showAverageBox = false" title="Fermer">❌</button>
+    <div *ngIf="loadingAverageByPiloteKPI">⏳ Chargement...</div>
+    <div *ngIf="!loadingAverageByPiloteKPI && averageResultByPiloteKPI !== null">
+      <h4>📊 Moyenne KPI Qualité</h4>
+      <p><strong>KPI :</strong> {{ filterKPI || 'Non défini' }}</p>
+      <p><strong>Pilote :</strong> {{ filterPilote || 'Non défini' }}</p>
+      <p><strong>Résultat :</strong> {{ averageResultByPiloteKPI | number:'1.2-2' }}%</p>
+    </div>
+  </div>
+
+  <!-- Export Button -->
+  <div class="export-button-wrapper">
+    <button (click)="exportExcel()" class="btn-export">
+      <i class="fas fa-file-excel"></i> Exporter Excel
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div *ngIf="!loading && !error && qualites.length > 0" class="filter-panel">
+    <label>De: <input type="date" [(ngModel)]="filterStartDate" (change)="applyFilters()" /></label>
+    <label>À: <input type="date" [(ngModel)]="filterEndDate" (change)="applyFilters()" /></label>
+    <label>KPI:
+      <select [(ngModel)]="filterKPI" (change)="applyFilters()">
+        <option value="">Tous</option>
+        <option *ngFor="let kpi of uniqueKPIs" [value]="kpi">{{ kpi }}</option>
+      </select>
+    </label>
+    <label>Pilote:
+      <select [(ngModel)]="filterPilote" (change)="applyFilters()">
+        <option value="">Tous</option>
+        <option *ngFor="let p of uniquePilotes" [value]="p">{{ p }}</option>
+      </select>
+    </label>
+    <button (click)="clearFilters()">Effacer</button>
+  </div>
+
+  <!-- KPI Tables -->
+  <div *ngIf="!loading && !error && qualites.length > 0" class="kpi-tables-container">
+    <div *ngFor="let group of groupedByKPI" class="kpi-table-group">
+   <div class="kpi-header">
+  <h3>KPI: {{ group.kpi }}</h3>
+  <div class="kpi-header-buttons">
+    <button class="btn-add-row" (click)="addInlineRow(group.kpi)" title="Ajouter une ligne">
+      <i class="fas fa-plus"></i>
+    </button>
+    <button class="btn-downtime" (click)="openDowntimeForKpi(group.kpi)" title="Déclarer une ligne d'arrêt">
+      ⛔ Ligne d'arrêt
+    </button>
+  </div>
+</div>
+
+      <div class="table-container">
+        <table class="kpi-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Pièces NC</th>
+              <th>Pièces Totales</th>
+              <th>Résultat (%)</th>
+              <th>Objectif (%)</th>
+              <th>Pilote</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Downtime summary row -->
+            <tr *ngIf="getDowntimeSummaryForKPI(group.kpi)" class="downtime-summary-row">
+              <td colspan="7">{{ getDowntimeSummaryForKPI(group.kpi) }}</td>
+            </tr>
+
+            <!-- New Inline Row -->
+            <tr *ngFor="let row of addedRows[group.kpi]" class="new-row">
+              <td><input type="date" [(ngModel)]="row.date" /></td>
+              <td><input type="number" [(ngModel)]="row.nombrePiecesNc" (ngModelChange)="updateResultat(row)" /></td>
+              <td><input type="number" [(ngModel)]="row.nombrePiecesTotal" (ngModelChange)="updateResultat(row)" /></td>
+              <td>{{ row.resultat | number:'1.2-2' }}%</td>
+              <td>{{ getObjectifByKPI(group.kpi) }}</td>
+              <td>{{ getPiloteByKPI(group.kpi) }}</td>
+              <td>
+                <button (click)="saveInlineRow(row, group.kpi)">Enregistrer</button>
+                <button (click)="cancelInlineRow(row, group.kpi)">Annuler</button>
+              </td>
+            </tr>
+
+            <!-- Existing Data Rows excluding downtime rows -->
+            <ng-container *ngFor="let q of group.items">
+              <tr *ngIf="!isDowntimeRow(q)" [class.downtime-row]="isDowntimeRow(q)">
+                <td>{{ q.date | date: 'yyyy-MM-dd' }}</td>
+                <td>{{ q.nombrePiecesNc }}</td>
+                <td>{{ q.nombrePiecesTotal }}</td>
+                <td>{{ q.resultat | number:'1.2-2' }}%</td>
+                <td>{{ q.objectif }}</td>
+                <td>{{ q.pilote }}</td>
+                <td class="actions-cell">
+                  <div>
+                    <button class="btn-edit" (click)="selectForUpdate(q)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-delete" (click)="deleteQualiteRequest(q.id!)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteConfirm" class="confirmation-overlay" (click)="cancelDelete()">
+    <div class="confirmation-modal" (click)="$event.stopPropagation()">
+      <p>Êtes-vous sûr de vouloir supprimer ce KPI ?</p>
+      <div class="confirmation-buttons">
+        <button class="btn-confirm" (click)="confirmDelete()">Oui, supprimer</button>
+        <button class="btn-cancel-modal" (click)="cancelDelete()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data -->
+  <div *ngIf="!loading && !error && qualites.length === 0" class="no-data">
+    Aucune donnée disponible.
+  </div>
+
+  <!-- Ligne d'arrêt Modal -->
+  <div *ngIf="selectedDowntimeKPI" class="modal-overlay">
+    <div class="modal-box">
+      <h3>Ligne d'arrêt pour le KPI: {{ selectedDowntimeKPI }}</h3>
+      <div class="modal-inputs">
+        <label>Début: <input type="date" [(ngModel)]="downtimeDateRange.startDate" /></label>
+        <label>Fin: <input type="date" [(ngModel)]="downtimeDateRange.endDate" /></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDowntimeForKpi()">Annuler</button>
+        <button class="btn-add" (click)="confirmDowntimeForKpi()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+</div>

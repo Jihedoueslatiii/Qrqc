@@ -1,0 +1,233 @@
+/* Container for all columns */
+.plan-action-container {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  justify-content: center;
+  background: #f4f6f8;
+  min-height: calc(100vh - 80px);
+  margin-left: 240px; /* Adjust for sidebar */
+  margin-top: 70px;   /* Adjust for topbar */
+  transition: margin 0.3s ease;
+}
+
+/* Each status column */
+.plan-column {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow-y: auto;
+  user-select: none;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Column headers */
+.plan-column h3 {
+  position: sticky;
+  top: 0;
+  margin: 0 0 16px;
+  padding: 12px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 8px 8px 0 0;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Each draggable card */
+.plan-card {
+  background: #ffffff;
+  border: 1px solid #e0e4e8;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.plan-card:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+/* Card content styling */
+.plan-card p {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.plan-card p strong {
+  color: #555;
+  font-weight: 600;
+}
+
+/* Delete button */
+.btn-delete {
+  background: #e63946;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 8px;
+  align-self: flex-end;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.btn-delete:focus,
+.btn-delete:active {
+  outline: none;
+  background: #b71c1c;
+  transform: translateY(0);
+}
+
+/* Scrollbar styling */
+.plan-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.plan-column::-webkit-scrollbar-thumb {
+  background: #c4cdd5;
+  border-radius: 4px;
+}
+
+.plan-column::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plan-column {
+  scrollbar-width: thin;
+  scrollbar-color: #c4cdd5 transparent;
+}
+
+/* Column colors and borders */
+/* NOT STARTED */
+#NOT_STARTED {
+  border-top: 4px solid #4a90e2;
+}
+
+#NOT_STARTED h3 {
+  color: #2e6da4;
+  background: #e8f0fe;
+}
+
+/* IN PROGRESS */
+#IN_PROGRESS {
+  border-top: 4px solid #f39c12;
+}
+
+#IN_PROGRESS h3 {
+  color: #b76d21;
+  background: #fff3e0;
+}
+
+/* COMPLETED */
+#COMPLETED {
+  border-top: 4px solid #27ae60;
+}
+
+#COMPLETED h3 {
+  color: #1b7844;
+  background: #e8f5e9;
+}
+
+/* Drag and drop styles */
+.cdk-drag-preview {
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  cursor: grabbing;
+}
+
+.cdk-drop-list-dragging .plan-card.cdk-drag-placeholder {
+  border: 2px dashed #b0bec5;
+  background: transparent;
+  box-shadow: none;
+  height: 80px;
+  border-radius: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .plan-action-container {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 80px;
+    padding: 16px;
+  }
+
+  .plan-column {
+    width: 90%;
+    max-width: 400px;
+    max-height: 50vh;
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .plan-column {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .plan-card {
+    padding: 12px;
+  }
+
+  .btn-delete {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Accessibility improvements */
+.plan-card:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
+}
+
+.btn-delete:focus {
+  outline: 2px solid #d32f2f;
+  outline-offset: 2px;
+}
+
+.delai-kpi-title {
+  font-size: 2.8rem;               /* Bigger font size */
+  font-weight: 800;                /* Extra bold */
+  color: #1f497d;                 /* Deep blue */
+  text-align: center;             /* Center horizontally */
+  margin: 40px auto 50px auto;   /* More vertical space top & bottom, auto horizontal margin */
+  user-select: none;              /* Disable text selection */
+  letter-spacing: 0.07em;         /* Slightly wider letters */
+  text-shadow: 2px 2px 5px rgba(31, 73, 125, 0.35); /* Stronger shadow */
+  max-width: 800px;               /* Limit width for better readability */
+  padding: 0 12px;                /* Padding on smaller screens */
+  z-index: 50;                   /* Make sure it’s on top */
+  position: relative;            /* For z-index to work */
+}

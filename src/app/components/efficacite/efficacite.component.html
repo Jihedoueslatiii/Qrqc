@@ -1,0 +1,64 @@
+<app-bar></app-bar>
+<div class="efficacite-wrapper p-6 bg-[#f4f7fa] min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-indigo-800 text-center mb-8 drop-shadow">
+      📊 Rapport Hebdomadaire d’Efficacité
+    </h2>
+    <div class="kpi-title-container mb-6 flex justify-center items-center gap-3">
+  <ng-container *ngIf="!editingTitle; else editTitleTpl">
+    <h2 class="text-2xl font-bold text-indigo-900">{{ kpiTitle }}</h2>
+    <button (click)="editTitle()" title="Modifier le titre"
+            class="text-blue-600 hover:text-blue-800 text-xl">
+      ✏️
+    </button>
+  </ng-container>
+
+  <ng-template #editTitleTpl>
+    <input
+      [(ngModel)]="kpiTitle"
+      class="border border-gray-300 rounded-lg px-3 py-1 text-lg w-full max-w-md"
+      (keydown.enter)="saveTitle()"
+      (blur)="saveTitle()"
+      autofocus
+    />
+  </ng-template>
+</div>
+
+<h3 class="mt-4 text-sm text-gray-500 text-center w-full">
+  🔄 Données automatiquement calculées à partir des pièces à temps / planifiées.
+</h3>
+
+
+    <div class="overflow-x-auto shadow-xl rounded-xl border border-gray-200 bg-white">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-indigo-100">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold text-indigo-900">🗓️ Semaine</th>
+            <th class="px-4 py-3 text-left font-semibold text-indigo-900">📅 Période</th>
+            <th class="px-4 py-3 text-center font-semibold text-indigo-900">📦 À Temps</th>
+            <th class="px-4 py-3 text-center font-semibold text-indigo-900">📝 Planifiées</th>
+            <th class="px-4 py-3 text-center font-semibold text-indigo-900">✅ Résultat</th>
+            <th class="px-4 py-3 text-center font-semibold text-indigo-900">🎯 Objectif</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let week of weeklyData" class="hover:bg-indigo-50 transition">
+            <td class="px-4 py-3 font-medium text-indigo-700">#{{ week.week }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ week.debut }} → {{ week.fin }}</td>
+            <td class="px-4 py-3 text-center font-semibold text-green-700">{{ week.totalATemps }}</td>
+            <td class="px-4 py-3 text-center font-semibold text-blue-700">{{ week.totalPlanifiees }}</td>
+    <td class="resultat" [ngClass]="{ 'good': week.resultat >= week.objectif, 'bad': week.resultat < week.objectif }">
+  {{ week.resultat }} %
+</td>
+<td class="objectif">
+  {{ week.objectif }} %
+</td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+   
+  </div>
+</div>

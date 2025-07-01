@@ -1,0 +1,13 @@
+<app-bar></app-bar>
+<div class="upload-container">
+  <input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls" />
+</div>
+
+<div class="card-container" *ngIf="data.length">
+  <div class="card" *ngFor="let item of data; let i = index">
+    <h3>Entry {{ i + 1 }}</h3>
+    <div *ngFor="let key of objectKeys(item)">
+      <strong>{{ key }}:</strong> {{ item[key] }}
+    </div>
+  </div>
+</div>

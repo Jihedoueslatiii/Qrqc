@@ -1,0 +1,122 @@
+<!-- src/app/components/kpi-ip-list/kpi-ip-list.component.html -->
+<app-bar></app-bar>
+<div class="container">
+<div style="text-align: right;">
+  <button class="add-button" (click)="toggleAddForm()">Add New Entry</button>
+</div>
+<button (click)="exportExcel()" class="export-button">
+  <i class="fas fa-file-excel"></i> Exporter vers Excel
+</button>
+
+  <!-- Search Bar -->
+<div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="applySearch()"
+      placeholder="🔍 Rechercher..."
+      class="search-input px-3 py-2 border border-gray-300 rounded"
+    />
+  </div>
+
+<div class="filter-wrapper">
+  <div class="filter-container">
+    <label for="semaineFilter">Filtrer par Semaine/Année:</label>
+    <select
+      id="semaineFilter"
+      [(ngModel)]="selectedSemaineAnnee"
+      (change)="applyFilters()"
+      class="filter-select"
+    >
+      <option value="">Toutes les semaines</option>
+      <option *ngFor="let option of uniqueSemaineAnnees" [value]="option">{{ option }}</option>
+    </select>
+  </div>
+</div>
+
+
+</div>
+
+
+
+ <div class="modal-backdrop" *ngIf="showAddForm">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add New KPI Entry</h2>
+<button class="close-button" (click)="toggleAddForm()">
+  <i class="fas fa-times"></i>
+</button>
+    </div>
+    <form [formGroup]="kpiForm" (ngSubmit)="onSubmit()">
+           <div class="form-group">
+        <label for="situationActuelle">Titre</label>
+<textarea id="titre" formControlName="titre" rows="3"></textarea>
+      </div>
+      
+     
+      <div class="form-group">
+<label for="codeIp"><i class="fas fa-barcode"></i> Code IP</label>
+        <input id="codeIp" formControlName="codeIp" />
+      </div>
+      <div class="form-group">
+        <label for="semaine">Semaine</label>
+        <input id="semaine" type="number" formControlName="semaine" (input)="updateSemaineAnnee()" />
+      </div>
+      <div class="form-group">
+        <label for="annee">Année</label>
+        <input id="annee" type="number" formControlName="annee" (input)="updateSemaineAnnee()" />
+      </div>
+      <div class="form-group">
+        <label>Semaine/Année</label>
+        <input id="semaineAnnee" formControlName="semaineAnnee" readonly />
+      </div>
+    
+      <div class="form-group">
+        <label for="hseTag">HSE Tag</label>
+        <input id="hseTag" type="checkbox" formControlName="hseTag" />
+      </div>
+    
+      <div class="form-group">
+        <label for="emetteur">Émetteur</label>
+<textarea id="emetteur" formControlName="emetteur" rows="2"></textarea>
+      </div>
+      <button type="submit" [disabled]="kpiForm.invalid" class="add-button">Add Entry</button>
+      <button type="button" (click)="toggleAddForm()" class="cancel-button">Cancel</button>
+    </form>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal-backdrop" *ngIf="showDeleteConfirm">
+  <div class="modal confirm-modal">
+    <h3>Are you sure you want to delete this entry?</h3>
+    <div class="modal-actions">
+      <button (click)="confirmDelete()" class="btn-delete">Yes, Delete</button>
+<button type="button" (click)="resetForm()" class="cancel-button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+  <div class="card-container">
+  <div class="card" *ngFor="let item of filteredData">
+      <div class="card-header">
+        <h3>KPI</h3>
+        <span class="emetteur">Émetteur: {{ item.emetteur }}</span>
+      </div>
+      <div class="card-body">
+        <p><strong>Titre:</strong> {{ item.titre }}</p>
+        <p><strong>Code IP:</strong> {{ item.codeIp }}</p>
+        <p><strong>Semaine:</strong> {{ item.semaine }}</p>
+        <p><strong>Année:</strong> {{ item.annee }}</p>
+        <p><strong>Semaine/Année:</strong> {{ item.semaineAnnee }}</p>
+        <p><strong>HSE Tag:</strong> {{ item.hseTag ? 'Oui' : 'Non' }}</p>
+      </div>
+      <div class="card-actions">
+        <button (click)="editItem(item)" class="btn-edit">Edit</button>
+        <button (click)="deleteItem(item)" class="btn-delete">Delete</button>
+        
+      </div>
+    </div>
+  </div>
+</div>

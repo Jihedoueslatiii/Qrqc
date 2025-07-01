@@ -1,0 +1,88 @@
+<app-bar></app-bar>
+<app-bar></app-bar>
+
+<div class="container">
+  <h1 class="title">📘 Documentation du projet QRQC</h1>
+  <p class="subtitle">Dernière mise à jour : {{ currentDate | date: 'dd/MM/yyyy' }}</p>
+
+  <section>
+    <h2>📌 À propos</h2>
+    <p>QRQC (Quick Response Quality Control) est une plateforme de gestion de qualité et de production permettant :</p>
+    <ul>
+      <li>La gestion des <strong>produits</strong> et leurs <strong>KPI</strong> (Coût, Délai, Qualité)</li>
+      <li>Le suivi des <strong>projets</strong> et leurs évolutions</li>
+      <li>La visualisation à travers un <strong>dashboard</strong> dynamique</li>
+      <li>L’analyse des <strong>causes</strong> d’anomalies</li>
+      <li>La création de <strong>plans d’action</strong> adaptés</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🧭 Navigation</h2>
+    <p>Utilisez la barre latérale pour accéder aux modules suivants :</p>
+    <ul>
+      <li><strong>Dashboard</strong> : Vue globale sur les performances</li>
+      <li><strong>Produits</strong> : Ajouter / Modifier un produit</li>
+      <li><strong>KPI</strong> : Saisir les données par KPI (Coût, Délai, Qualité)</li>
+      <li><strong>Analyse</strong> : Analyser les causes</li>
+      <li><strong>Plan d’action</strong> : Définir les réponses correctives</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>➕ Ajout de données</h2>
+    <ul>
+      <li>Cliquer sur <strong>➕ Nouveau KPI</strong> pour créer un nouvel indicateur avec son pilote et objectif</li>
+      <li>Ajouter des lignes avec le bouton <strong>➕</strong> par KPI</li>
+      <li>Utiliser le bouton <strong>➖ Ligne d’arrêt</strong> pour noter une interruption de production</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📊 Lecture des indicateurs</h2>
+    <p>Chaque ligne de KPI affiche :</p>
+    <ul>
+      <li>📅 <strong>Date</strong> de la mesure</li>
+      <li>🔢 <strong>Valeurs</strong> déclarées ou mesurées</li>
+      <li>✅ Résultat calculé automatiquement (ex. : % pièces conformes)</li>
+      <li>🎯 Objectif à atteindre</li>
+      <li>👤 Nom du pilote</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📤 Exportation</h2>
+    <p>Utilisez le bouton <strong>Exporter Excel</strong> pour télécharger un rapport personnalisé de vos données KPI selon les filtres actifs.</p>
+  </section>
+
+  <section>
+    <h2>🔍 Analyse des causes</h2>
+    <p>Dans la section <strong>Analyse</strong>, vous pouvez :</p>
+    <ul>
+      <li>Associer une ou plusieurs causes à un KPI anormal</li>
+      <li>Choisir le type de problème (qualité, temps, coût, etc.)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📝 Plans d’action</h2>
+    <p>Pour chaque cause détectée :</p>
+    <ul>
+      <li>Créer un plan d’action correctif</li>
+      <li>Assigner un responsable</li>
+      <li>Suivre l’état d’avancement (à faire, en cours, terminé)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📈 Dashboard</h2>
+    <p>La page de tableau de bord vous permet de :</p>
+    <ul>
+      <li>Visualiser les performances globales</li>
+      <li>Comparer les résultats entre produits / projets</li>
+      <li>Suivre les progrès à travers des graphiques et camemberts</li>
+    </ul>
+  </section>
+
+
+</div>

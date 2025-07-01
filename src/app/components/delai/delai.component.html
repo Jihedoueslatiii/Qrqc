@@ -1,0 +1,192 @@
+<app-bar></app-bar>
+<div class="main-content">
+  <h1 class="delai-kpi-title">📊 Délai KPI</h1>
+
+
+  <!-- Button to open modal -->
+  <button (click)="openNewKpiModal()" class="btn-primary">➕ Nouveau KPI</button>
+
+  <!-- Modal for new KPI -->
+  <div *ngIf="showNewKpiModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Ajouter un nouveau KPI</h2>
+      <div class="modal-inputs">
+        <input [(ngModel)]="newKpi.kpi" placeholder="Nom du KPI" />
+        <input [(ngModel)]="newKpi.pilote" placeholder="Pilote" />
+        <input [(ngModel)]="newKpi.objectif" type="number" placeholder="Objectif (%)" />
+      </div>
+      <div class="modal-actions">
+        <button (click)="cancelNewKpi()" class="btn-cancel">Annuler</button>
+        <button (click)="confirmNewKpi()" class="btn-add">Ajouter</button>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Floating average result -->
+  <div class="floating-average-box" cdkDrag *ngIf="showAverageBox" (cdkDragStarted)="dragging = true" (cdkDragEnded)="dragging = false">
+    <button class="close-btn" (click)="showAverageBox = false" title="Fermer">❌</button>
+    <div *ngIf="averageFilteredResult !== null">
+      <h4>📊 Moyenne KPI Délai</h4>
+      <p><strong>Résultat moyen :</strong> {{ averageFilteredResult | number:'1.2-2' }}%</p>
+    </div>
+  </div>
+
+  <!-- Export button -->
+  <div class="export-button-wrapper">
+    <button (click)="exportToExcel()" class="btn-export">
+      <i class="fas fa-file-excel"></i> Exporter Excel
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-panel">
+    <label>De:
+      <input type="date" [(ngModel)]="filterStartDate" (change)="applyFilters()" />
+    </label>
+    <label>À:
+      <input type="date" [(ngModel)]="filterEndDate" (change)="applyFilters()" />
+    </label>
+    <label>KPI:
+      <select [(ngModel)]="filterKPI" (change)="applyFilters()">
+        <option value="">Tous</option>
+        <option *ngFor="let k of uniqueKpis" [value]="k">{{ k }}</option>
+      </select>
+    </label>
+    <label>Pilote:
+      <select [(ngModel)]="filterPilote" (change)="applyFilters()">
+        <option value="">Tous</option>
+        <option *ngFor="let p of uniquePilotes" [value]="p">{{ p }}</option>
+      </select>
+    </label>
+    <button (click)="clearFilters()">Effacer</button>
+  </div>
+
+  <!-- Tables by KPI -->
+  <div class="kpi-tables-container" *ngIf="groupedDelaisKeys.length > 0">
+    <div *ngFor="let kpi of groupedDelaisKeys" class="kpi-table-group">
+<div class="kpi-header">
+  <h3>{{ kpi }}</h3>
+  <div class="header-actions">
+    <button class="btn-add-row" (click)="addNewRow(kpi)">
+      <i class="fas fa-plus"></i>
+    </button>
+    <button class="btn-warning" (click)="openDowntimeForKpi(kpi)">➖ Ligne d'arrêt</button>
+  </div>
+</div>
+
+
+
+      <div class="table-container">
+        <table class="kpi-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Nb Pièces à Temps</th>
+              <th>Nb Pièces Planifiées</th>
+              <th>Résultat (%)</th>
+              <th>Objectif</th>
+              <th>Pilote</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+  <tr *ngIf="downtimeNotices[kpi]" class="downtime-row">
+    <td colspan="7">
+      ⚠️ Ligne d'arrêt du {{ downtimeNotices[kpi]?.startDate }} au {{ downtimeNotices[kpi]?.endDate }}
+    </td>
+  </tr>
+
+            <!-- New Row -->
+            <tr *ngIf="hasNewRow(kpi)" class="new-row">
+              <td><input type="date" [(ngModel)]="newRows[kpi].date" class="table-input" /></td>
+              <td><input type="number" [(ngModel)]="newRows[kpi].nombrePiecesATemps" class="table-input" /></td>
+              <td><input type="number" [(ngModel)]="newRows[kpi].nombrePiecesPlanifiees" class="table-input" /></td>
+              <td>{{ (newRows[kpi].nombrePiecesATemps / newRows[kpi].nombrePiecesPlanifiees) * 100 | number:'1.2-2' }}%</td>
+              <td>{{ newRows[kpi].objectif }}%</td>
+              <td>{{ newRows[kpi].pilote }}</td>
+              <td class="actions-cell">
+                <button class="btn-save" (click)="saveNewRow(kpi)">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button class="btn-cancel" (click)="cancelNewRow(kpi)">
+                  <i class="fas fa-times"></i>
+                </button>
+
+              </td>
+            </tr>
+
+            <!-- Existing Rows -->
+            <ng-container *ngFor="let delai of groupedDelais[kpi]">
+              <!-- Warning row -->
+             
+
+              <tr [class.editing-row]="isEditing(delai)">
+                <td>
+                  <span *ngIf="!isEditing(delai)">{{ delai.date | date:'yyyy-MM-dd' }}</span>
+                  <input *ngIf="isEditing(delai)" type="date" [(ngModel)]="delai.date" class="table-input" />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing(delai)">{{ delai.nombrePiecesATemps }}</span>
+                  <input *ngIf="isEditing(delai)" type="number" [(ngModel)]="delai.nombrePiecesATemps" class="table-input" />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing(delai)">{{ delai.nombrePiecesPlanifiees }}</span>
+                  <input *ngIf="isEditing(delai)" type="number" [(ngModel)]="delai.nombrePiecesPlanifiees" class="table-input" />
+                </td>
+                <td class="result-cell" 
+                    [class.good]="(delai.resultat || 0) >= (delai.objectif || 0)" 
+                    [class.bad]="(delai.resultat || 0) < (delai.objectif || 0)">
+                  {{ delai.nombrePiecesATemps / delai.nombrePiecesPlanifiees * 100 | number:'1.2-2' }}%
+                </td>
+                <td>
+                  <span *ngIf="!isEditing(delai)">{{ delai.objectif }}</span>
+                  <input *ngIf="isEditing(delai)" type="number" [(ngModel)]="delai.objectif" class="table-input" />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing(delai)">{{ delai.pilote }}</span>
+                  <input *ngIf="isEditing(delai)" type="text" [(ngModel)]="delai.pilote" class="table-input" />
+                </td>
+                <td class="actions-cell">
+                  <button *ngIf="!isEditing(delai)" class="btn-edit" (click)="startEdit(delai)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button *ngIf="!isEditing(delai)" class="btn-delete" (click)="deleteDelai(delai.id!)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <div *ngIf="isEditing(delai)">
+                    <button class="btn-save" (click)="saveEdit(delai)">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn-cancel" (click)="cancelEdit(delai)">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- No data -->
+  <div *ngIf="!loading && groupedDelaisKeys.length === 0">
+    Aucune donnée disponible.
+  </div>
+</div>
+<!-- Modal for downtime -->
+<div *ngIf="selectedDowntimeKPI" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Ajouter une ligne d'arrêt pour "{{ selectedDowntimeKPI }}"</h3>
+    <label>Date début:</label>
+    <input type="date" [(ngModel)]="downtimeDateRange.startDate" />
+    <label>Date fin:</label>
+    <input type="date" [(ngModel)]="downtimeDateRange.endDate" />
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="cancelDowntimeForKpi()">Annuler</button>
+      <button class="btn-add" (click)="confirmDowntimeForKpi()">Confirmer</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<app-bar></app-bar>
+
+<!-- Titre clair et centré -->
+<h1 class="delai-kpi-title">🔍 Status Plan d'action</h1>
+
+<!-- Conteneur des colonnes de status -->
+<div class="plan-action-container" cdkDropListGroup>
+
+  <!-- Colonne Not Started -->
+  <div
+    class="plan-column"
+    cdkDropList
+    id="NOT_STARTED"
+    [cdkDropListData]="notStartedPlans"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <h3>🕒 Not Started</h3>
+    <div *ngFor="let plan of notStartedPlans" cdkDrag class="plan-card" tabindex="0">
+      <p><strong>Action:</strong> {{ plan.action }}</p>
+      <p><strong>Pilote:</strong> {{ plan.pilote || 'Non défini' }}</p>
+      <p><strong>Délai:</strong> {{ plan.delai | date:'dd/MM/yyyy' }}</p>
+      <button (click)="deletePlan(plan.id!)" class="btn-delete">Delete</button>
+    </div>
+  </div>
+
+  <!-- Colonne In Progress -->
+  <div
+    class="plan-column"
+    cdkDropList
+    id="IN_PROGRESS"
+    [cdkDropListData]="inProgressPlans"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <h3>🚧 In Progress</h3>
+    <div *ngFor="let plan of inProgressPlans" cdkDrag class="plan-card" tabindex="0">
+      <p><strong>Action:</strong> {{ plan.action }}</p>
+      <p><strong>Pilote:</strong> {{ plan.pilote || 'Non défini' }}</p>
+      <p><strong>Délai:</strong> {{ plan.delai | date:'dd/MM/yyyy' }}</p>
+      <button (click)="deletePlan(plan.id!)" class="btn-delete">Delete</button>
+    </div>
+  </div>
+
+  <!-- Colonne Completed -->
+  <div
+    class="plan-column"
+    cdkDropList
+    id="COMPLETED"
+    [cdkDropListData]="completedPlans"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <h3>✅ Completed</h3>
+    <div *ngFor="let plan of completedPlans" cdkDrag class="plan-card" tabindex="0">
+      <p><strong>Action:</strong> {{ plan.action }}</p>
+      <p><strong>Pilote:</strong> {{ plan.pilote || 'Non défini' }}</p>
+      <p><strong>Délai:</strong> {{ plan.delai | date:'dd/MM/yyyy' }}</p>
+      <button (click)="deletePlan(plan.id!)" class="btn-delete">Delete</button>
+    </div>
+  </div>
+</div>

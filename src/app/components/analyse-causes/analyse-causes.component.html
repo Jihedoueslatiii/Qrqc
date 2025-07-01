@@ -1,0 +1,342 @@
+<app-bar></app-bar>
+
+<div class="container">
+<h1 class="delai-kpi-title">🔍 Analyse Cause & Plan d'action</h1>
+
+  <!-- Loading Message -->
+  <div *ngIf="loading" class="loading-container">
+    ⏳ Chargement des données...
+  </div>
+
+  <!-- Add Button -->
+ <div class="container" style="text-align: center; margin: 50px 0 20px;">
+  <button (click)="openAddModal()" class="btn-submit">➕ Ajouter une analyse</button>
+</div>
+
+
+  <!-- Add Modal Backdrop -->
+  <div class="modal-backdrop" *ngIf="showAddModal" (click)="closeAddModal()"></div>
+
+  <!-- Add Modal -->
+  <div class="modal" *ngIf="showAddModal">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Ajouter une nouvelle analyse</h3>
+      <form (ngSubmit)="addAnalyse()" #addAnalyseForm="ngForm">
+        <!-- ... your existing add form fields ... -->
+        <!-- Keep as is from your current code -->
+         <div class="form-row">
+        <label for="date">Date :</label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          [(ngModel)]="newAnalyse.date"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="semaine">Semaine :</label>
+        <input
+          type="number"
+          id="semaine"
+          name="semaine"
+          [(ngModel)]="newAnalyse.semaine"
+          min="0"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="indicateur">Indicateur :</label>
+        <input
+          type="text"
+          id="indicateur"
+          name="indicateur"
+          [(ngModel)]="newAnalyse.indicateur"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="probleme">Problème :</label>
+        <input
+          type="text"
+          id="probleme"
+          name="probleme"
+          [(ngModel)]="newAnalyse.probleme"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="pourquoi">Pourquoi :</label>
+        <input
+          type="text"
+          id="pourquoi"
+          name="pourquoi"
+          [(ngModel)]="newAnalyse.pourquoi"
+          required
+        />
+      </div>
+
+      <h4>Plan d'Action</h4>
+
+      <div class="form-row">
+        <label for="action">Action :</label>
+        <input
+          type="text"
+          id="action"
+          name="action"
+          [(ngModel)]="newAnalyse.planAction.action"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="pilote">Pilote :</label>
+        <input
+          type="text"
+          id="pilote"
+          name="pilote"
+          [(ngModel)]="newAnalyse.planAction.pilote"
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="delai">Délai :</label>
+        <input
+          type="date"
+          id="delai"
+          name="delai"
+          [(ngModel)]="newAnalyse.planAction.delai"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="statut">Statut :</label>
+        <select
+          id="statut"
+          name="statut"
+          [(ngModel)]="newAnalyse.planAction.statut"
+          required
+        >
+          <option value="NOT_STARTED">Not Started</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </div>
+
+      <div style="margin-top: 15px; text-align: right;">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="closeAddModal()"
+          style="margin-right: 10px;"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          [disabled]="addAnalyseForm.invalid"
+          class="btn-submit"
+        >
+          Ajouter
+        </button>
+      </div>
+ 
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Modal Backdrop -->
+  <div class="modal-backdrop" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+
+  <!-- Edit Modal -->
+  <div class="modal" *ngIf="showEditModal && editingAnalyse">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Modifier l'analyse</h3>
+      <form (ngSubmit)="updateAnalyse()" #editAnalyseForm="ngForm">
+        <div class="form-row">
+          <label for="edit-date">Date :</label>
+          <input
+            type="date"
+            id="edit-date"
+            name="date"
+            [(ngModel)]="editingAnalyse.date"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-semaine">Semaine :</label>
+          <input
+            type="number"
+            id="edit-semaine"
+            name="semaine"
+            [(ngModel)]="editingAnalyse.semaine"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-indicateur">Indicateur :</label>
+          <input
+            type="text"
+            id="edit-indicateur"
+            name="indicateur"
+            [(ngModel)]="editingAnalyse.indicateur"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-probleme">Problème :</label>
+          <input
+            type="text"
+            id="edit-probleme"
+            name="probleme"
+            [(ngModel)]="editingAnalyse.probleme"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-pourquoi">Pourquoi :</label>
+          <input
+            type="text"
+            id="edit-pourquoi"
+            name="pourquoi"
+            [(ngModel)]="editingAnalyse.pourquoi"
+            required
+          />
+        </div>
+
+        <h4>Plan d'Action</h4>
+
+        <div class="form-row">
+          <label for="edit-action">Action :</label>
+          <input
+            type="text"
+            id="edit-action"
+            name="action"
+            [(ngModel)]="editingAnalyse.planAction.action"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-pilote">Pilote :</label>
+          <input
+            type="text"
+            id="edit-pilote"
+            name="pilote"
+            [(ngModel)]="editingAnalyse.planAction.pilote"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-delai">Délai :</label>
+          <input
+            type="date"
+            id="edit-delai"
+            name="delai"
+            [(ngModel)]="editingAnalyse.planAction.delai"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="edit-statut">Statut :</label>
+          <select
+            id="edit-statut"
+            name="statut"
+            [(ngModel)]="editingAnalyse.planAction.statut"
+            required
+          >
+            <option value="NOT_STARTED">Not Started</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
+
+        <div style="margin-top: 15px; text-align: right;">
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="closeEditModal()"
+            style="margin-right: 10px;"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            [disabled]="editAnalyseForm.invalid"
+            class="btn-submit"
+          >
+            Mettre à jour
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div *ngIf="!loading && analyseCauses.length" class="cards-container">
+    <div
+      *ngFor="let analyse of analyseCauses; trackBy: trackByAnalyse"
+      class="analyse-card"
+    >
+      <div class="analyse-content">
+        <p><strong>📅 Date :</strong> <span>{{ analyse.date | date: 'dd/MM/yyyy' }}</span></p>
+        <p><strong>📊 Semaine :</strong> <span>{{ analyse.semaine }}</span></p>
+        <p><strong>📈 Indicateur :</strong> <span class="indicateur">{{ analyse.indicateur }}</span></p>
+        <p><strong>⚠️ Problème :</strong> <span>{{ analyse.probleme }}</span></p>
+        <p><strong>🤔 Pourquoi :</strong> <span>{{ analyse.pourquoi }}</span></p>
+      </div>
+
+      <div *ngIf="analyse.planAction" class="sticky-note">
+        <div class="pin"></div>
+        <h4>📝 Plan d'Action</h4>
+        <p><strong>Action :</strong> <span>{{ analyse.planAction.action }}</span></p>
+        <p><strong>Pilote :</strong> <span>{{ analyse.planAction.pilote || 'Non défini' }}</span></p>
+        <p><strong>Délai :</strong> <span>{{ analyse.planAction.delai | date: 'dd/MM/yyyy' }}</span></p>
+        <p>
+          <strong>Statut :</strong>
+          <span
+            [ngClass]="{
+              'status-en-cours': analyse.planAction.statut === 'NOT_STARTED',
+              'status-termine': analyse.planAction.statut === 'IN_PROGRESS',
+              'status-en-retard': analyse.planAction.statut === 'COMPLETED'
+            }"
+            class="status-badge"
+          >
+            {{ analyse.planAction.statut }}
+          </span>
+        </p>
+      </div>
+
+      <div *ngIf="!analyse.planAction" class="no-plan">
+        <em>📋 Aucun plan d'action défini</em>
+      </div>
+
+      <!-- Edit and Delete buttons -->
+      <div class="analyse-card-actions" style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button (click)="openEditModal(analyse)" class="btn-edit" style="background:#3498db; color:#fff; border:none; padding:5px 10px; border-radius:4px;">
+          ✏️ Modifier
+        </button>
+        <button (click)="deleteAnalyse(analyse.id!)" class="btn-delete" style="background:#e74c3c; color:#fff; border:none; padding:5px 10px; border-radius:4px;">
+          🗑️ Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data Case -->
+  <div *ngIf="!loading && !analyseCauses.length" class="no-data" style="text-align:center; margin-top:20px;">
+    <p>😕 Aucune donnée disponible.</p>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<app-bar></app-bar>
+<div class="dashboard-container">
+<div class="btn-container">
+  <button class="dashboard-btn" routerLink="/visuals">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h3v8H3v-8zm5-4h3v12H8V8zm5-6h3v18h-3V2z" />
+    </svg>
+    Dashboard
+  </button>
+</div>
+
+
+
+  <h2 class="dashboard-title">📊 Dashboard Statistiques</h2>
+
+  <div *ngIf="loading" class="loading-text">Chargement des statistiques...</div>
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="stats-cards">
+
+    <!-- Qualité Card -->
+    <div class="stat-card">
+      <h3 class="stat-title">Qualité Moyenne</h3>
+      <p class="stat-value">{{ averageQualite | number:'1.2-2' }}%</p>
+
+      <div class="kpi-list">
+        <h4>Par programme :</h4>
+        <ul>
+          <li *ngFor="let item of qualiteAveragesByKpi" class="kpi-item">
+            <span class="kpi-name">{{ item.kpi }}</span>
+            <span class="kpi-value">{{ item.average | number:'1.2-2' }}%</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Délai Card -->
+    <div class="stat-card">
+      <h3 class="stat-title">Délai Moyen</h3>
+      <p class="stat-value">{{ averageDelai | number:'1.2-2' }}%</p>
+
+      <div class="kpi-list">
+        <h4>Par programme :</h4>
+        <ul>
+          <li *ngFor="let item of delaiAveragesByKpi" class="kpi-item">
+            <span class="kpi-name">{{ item.kpi }}</span>
+            <span class="kpi-value">{{ item.average | number:'1.2-2' }}%</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Coût Card -->
+    <div class="stat-card">
+      <h3 class="stat-title">Coût Moyen</h3>
+      <p class="stat-value">{{ averageCout | number:'1.2-2' }}%</p>
+
+      <div class="kpi-list">
+        <h4>Par programme :</h4>
+        <ul>
+          <li *ngFor="let item of coutAveragesByKpi" class="kpi-item">
+            <span class="kpi-name">{{ item.kpi }}</span>
+            <span class="kpi-value">{{ item.average | number:'1.2-2' }}%</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
