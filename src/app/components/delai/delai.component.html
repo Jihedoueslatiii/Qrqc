@@ -66,7 +66,7 @@
   <div class="kpi-tables-container" *ngIf="groupedDelaisKeys.length > 0">
     <div *ngFor="let kpi of groupedDelaisKeys" class="kpi-table-group">
 <div class="kpi-header">
-  <h3>{{ kpi }}</h3>
+  <h3>programme:{{ kpi }}</h3>
   <div class="header-actions">
     <button class="btn-add-row" (click)="addNewRow(kpi)">
       <i class="fas fa-plus"></i>

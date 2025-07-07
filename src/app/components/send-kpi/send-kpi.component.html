@@ -1,0 +1,66 @@
+<app-bar></app-bar>
+<div class="email-sender-container">
+  <h2>📧 Send KPI Report</h2>
+
+  <!-- Receiver List -->
+  <div class="receiver-list">
+    <div *ngFor="let email of receivers; let i = index" class="receiver-item">
+      <input
+        [(ngModel)]="receivers[i]"
+        class="email-input"
+        placeholder="Receiver Email {{ i + 1 }}"
+        [class.invalid]="!isValidEmail(email) && email"
+        (input)="validateEmail(i)"
+      />
+      <button
+        *ngIf="receivers.length > 1"
+        class="btn-remove"
+        (click)="removeReceiver(i)"
+        title="Remove Receiver"
+      >
+        🗑️
+      </button>
+    </div>
+  </div>
+
+  <!-- Validation Message -->
+  <div *ngIf="hasInvalidEmails" class="error-message">
+    Please ensure all email addresses are valid.
+  </div>
+
+  <!-- Schedule Inputs -->
+  <div class="schedule-container">
+    <label>Schedule Send (optional):</label>
+    <div class="schedule-inputs">
+      <input
+        type="date"
+        [(ngModel)]="scheduledDate"
+        class="schedule-input date-input"
+        (change)="validateSchedule()"
+      />
+      <input
+        type="time"
+        [(ngModel)]="scheduledTime"
+        class="schedule-input time-input"
+        (change)="validateSchedule()"
+      />
+    </div>
+  </div>
+
+  <!-- Scheduled Status -->
+  <div *ngIf="isScheduled" class="schedule-status">
+    Scheduled for {{ scheduledDateTime | date: 'shortTime' }} on {{ scheduledDateTime | date: 'mediumDate' }}
+    <button (click)="cancelSchedule()" class="btn-cancel-schedule">Cancel</button>
+  </div>
+
+  <!-- Buttons -->
+  <button (click)="addReceiver()" class="btn-add">➕ Add Receiver</button>
+  <button
+    (click)="sendKpiAlert()"
+    class="btn-send"
+    [disabled]="isSending || hasInvalidEmails || isScheduled"
+  >
+    <span *ngIf="isSending" class="spinner"></span>
+    {{ isSending ? 'Sending...' : isScheduled ? 'Scheduled' : '📤 Send KPI Report' }}
+  </button>
+</div>

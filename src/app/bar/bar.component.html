@@ -8,7 +8,7 @@
   
   <div class="nav-right">
     <div class="nav-icons">
-      <a routerLink="/services" routerLinkActive="active">Services</a>
+      <a routerLink="/mail" routerLinkActive="active">Mailing List</a>
       <a routerLink="/contact" routerLinkActive="active">Contact</a>
       <a routerLink="/apropos" routerLinkActive="active">A propos</a>
     </div>
@@ -44,9 +44,9 @@
                 <li><a [routerLink]="'/kpi'" routerLinkActive="active">Listes Des Programmes</a></li>
 
         <li><a [routerLink]="'/dashboard'" routerLinkActive="active">Dashboard</a></li>
-        <li><a [routerLink]="'/produitQ'" routerLinkActive="active">Qualité</a></li>
-        <li><a [routerLink]="'/Delai'" routerLinkActive="active">Délai(OTD)</a></li>
-        <li><a [routerLink]="'/cout'" routerLinkActive="active">Coût</a></li>
+        <li><a [routerLink]="'/produitQ'" routerLinkActive="active">Qualité(Taux de NC Internes)</a></li>
+        <li><a [routerLink]="'/Delai'" routerLinkActive="active">Délai(OTP)</a></li>
+        <li><a [routerLink]="'/cout'" routerLinkActive="active">Coût(Efficience)</a></li>
       </ul>
     </li>
     
@@ -116,6 +116,7 @@
       <ul class="submenu" [class.open]="dropdownStates['performance-reports']">
         <li><a [routerLink]="'/kpi'" routerLinkActive="active">Programmes</a></li>
         <li><a [routerLink]="'/visuals'" routerLinkActive="active">Statistiques</a></li>
+        <li><a [routerLink]="'/stats'" routerLinkActive="active">Details Programmes</a></li>
       </ul>
     </li>
     

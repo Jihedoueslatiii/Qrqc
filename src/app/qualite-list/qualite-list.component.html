@@ -54,7 +54,7 @@
   <div *ngIf="!loading && !error && qualites.length > 0" class="kpi-tables-container">
     <div *ngFor="let group of groupedByKPI" class="kpi-table-group">
    <div class="kpi-header">
-  <h3>KPI: {{ group.kpi }}</h3>
+  <h3>Programme: {{ group.kpi }}</h3>
   <div class="kpi-header-buttons">
     <button class="btn-add-row" (click)="addInlineRow(group.kpi)" title="Ajouter une ligne">
       <i class="fas fa-plus"></i>
@@ -105,7 +105,11 @@
                 <td>{{ q.date | date: 'yyyy-MM-dd' }}</td>
                 <td>{{ q.nombrePiecesNc }}</td>
                 <td>{{ q.nombrePiecesTotal }}</td>
-                <td>{{ q.resultat | number:'1.2-2' }}%</td>
+<td class="result-cell"
+    [class.good]="(q.resultat || 0) >= (q.objectif || 0)"
+    [class.bad]="(q.resultat || 0) < (q.objectif || 0)">
+  {{ q.resultat | number:'1.2-2' }}%
+</td>
                 <td>{{ q.objectif }}</td>
                 <td>{{ q.pilote }}</td>
                 <td class="actions-cell">

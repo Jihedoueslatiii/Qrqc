@@ -165,14 +165,14 @@ onLogin(): void {
         this.router.navigate(['/admin-dashboard']);
         break;
       case 'Project_Manager':
-        this.router.navigate(['/produitQ']);
+        this.router.navigate(['/stats']);
         break;
       case 'Employer':
-        this.router.navigate(['produitQ']);
+        this.router.navigate(['/stats']);
         break;
       case 'Client':
       default:
-        this.router.navigate(['/produitQ']);
+        this.router.navigate(['/stats']);
         break;
     }
   }

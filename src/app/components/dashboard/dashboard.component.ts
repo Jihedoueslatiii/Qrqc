@@ -3,7 +3,7 @@ import { forkJoin } from 'rxjs';
 import { QualiteService } from 'src/app/services/qualite.service';
 import { DelaiService } from 'src/app/services/delai.service';
 import { CoutService } from 'src/app/services/cout.service';
-
+import { AnomalyService, KpiData } from 'src/app/services/anomaly-service.service';
 interface KpiAverage {
   kpi: string;
   average: number;
@@ -18,6 +18,8 @@ export class DashboardComponent implements OnInit {
   averageQualite: number | null = null;
   averageDelai: number | null = null;
   averageCout: number | null = null;
+    anomalyPredictions: number[] = [];
+
 
   qualiteAveragesByKpi: KpiAverage[] = [];
   delaiAveragesByKpi: KpiAverage[] = [];
@@ -29,7 +31,9 @@ export class DashboardComponent implements OnInit {
   constructor(
     private qualiteService: QualiteService,
     private delaiService: DelaiService,
-    private coutService: CoutService
+    private coutService: CoutService,
+        private anomalyService: AnomalyService // Inject here
+
   ) {}
 
   ngOnInit(): void {
@@ -94,4 +98,13 @@ export class DashboardComponent implements OnInit {
       return { kpi, average: avg };
     });
   }
+threshold = 90; // example threshold
+
+getAlertClass(value: number | null): string {
+  if (value == null) return '';
+  if (value < 60) return 'flash-critical';
+  if (value < this.threshold) return 'flash-warning';
+  return '';
+}
+
 }

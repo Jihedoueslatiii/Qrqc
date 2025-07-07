@@ -31,6 +31,8 @@ import { OtdProjetComponent } from './components/otd-projet/otd-projet.component
 import { KpiIpProjetComponent } from './components/kpi-ip-projet/kpi-ip-projet.component';
 import { KpiListComponent } from './components/kpi-list/kpi-list.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
+import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
+import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,7 +54,9 @@ import { DocumentationComponent } from './components/documentation/documentation
     OtdProjetComponent,
     KpiIpProjetComponent,
     KpiListComponent,
-    DocumentationComponent
+    DocumentationComponent,
+    DashboardStatsComponent,
+    SendKpiComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +66,7 @@ import { DocumentationComponent } from './components/documentation/documentation
     DragDropModule,
     NgChartsModule ,
     ReactiveFormsModule,
+    
     
     BrowserAnimationsModule,
       ToastrModule.forRoot({

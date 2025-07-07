@@ -1,0 +1,195 @@
+<app-bar></app-bar>
+
+<div *ngIf="loading" class="loading">Chargement des statistiques...</div>
+
+<div id="reportContent">
+  <div *ngIf="!loading && stats.length" class="dashboard-container">
+    
+    <!-- Alert Banner -->
+    <div *ngIf="hasCriticalAlerts()" [class]="getAlertBannerClass()">
+      {{ getAlertBannerMessage() }}
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="actions-row">
+      <button class="btn btn-primary" (click)="generatePDF()">
+        📄 Download KPI Report (PDF)
+      </button>
+      <button class="btn btn-success" (click)="exportToExcel()">
+        📊 Exporter vers Excel
+      </button>
+    </div>
+
+    <h2>📊 KPI Dashboard Overview</h2>
+    
+    <!-- Alert Summary -->
+    <div *ngIf="hasCriticalAlerts()" class="alert-summary">
+      <h3>🔔 Résumé des Alertes</h3>
+      <p>Critique: {{ getAlertSummary().critical }} | Attention: {{ getAlertSummary().warning }} | Total: {{ getAlertSummary().total }}</p>
+    </div>
+    
+    <!-- Top summary cards with alert states -->
+    <div class="cards-row">
+      <div class="card card-blue" [class]="getCardAlertClass(getAverage('qualite'))">
+        <div class="alert-status" [class]="getAlertStatus(getAverage('qualite')).class">
+          {{ getAlertStatus(getAverage('qualite')).text }}
+        </div>
+        <h3>{{ getMetricStatusIcon(getAverage('qualite')) }} Qualité Des Produits</h3>
+        <p class="large-stat">{{ getAverage('qualite') | number:'1.1-1' }}%</p>
+        <small>Seuil: {{ threshold }}%</small>
+      </div>
+      
+      <div class="card card-orange" [class]="getCardAlertClass(getAverage('delai'))">
+        <div class="alert-status" [class]="getAlertStatus(getAverage('delai')).class">
+          {{ getAlertStatus(getAverage('delai')).text }}
+        </div>
+        <h3>{{ getMetricStatusIcon(getAverage('delai')) }} Délai Des Produits</h3>
+        <p class="large-stat">{{ getAverage('delai') | number:'1.1-1' }}%</p>
+        <small>Seuil: {{ threshold }}%</small>
+      </div>
+      
+      <div class="card card-green" [class]="getCardAlertClass(getAverage('cout'))">
+        <div class="alert-status" [class]="getAlertStatus(getAverage('cout')).class">
+          {{ getAlertStatus(getAverage('cout')).text }}
+        </div>
+        <h3>{{ getMetricStatusIcon(getAverage('cout')) }} Coût Des Produits</h3>
+        <p class="large-stat">{{ getAverage('cout') | number:'1.1-1' }}%</p>
+        <small>Seuil: {{ threshold }}%</small>
+      </div>
+      
+      <div class="card card-teal" [class]="getCardAlertClass(avgEfficacite)">
+        <div class="alert-status" [class]="getAlertStatus(avgEfficacite).class">
+          {{ getAlertStatus(avgEfficacite).text }}
+        </div>
+        <h3>{{ getMetricStatusIcon(avgEfficacite) }} Efficacité (Délai)</h3>
+        <p class="large-stat">{{ avgEfficacite | number:'1.1-1' }}%</p>
+        <small>Seuil: {{ threshold }}%</small>
+      </div>
+      
+      <div class="card card-cyan">
+        <h3>📈 KPI IP Totals</h3>
+        <p><strong>Total:</strong> {{ totalKpiIp }}</p>
+        <p><strong>HSE Tag:</strong> {{ totalHseTag }}</p>
+        <p><strong>IP:</strong> {{ totalIp }}</p>
+      </div>
+    </div>
+
+    <!-- Project cards row with alert states -->
+    <div class="projects-cards-row">
+      <div 
+        class="project-card" 
+        [class]="getProjectCardAlertClass(stat)"
+        *ngFor="let stat of stats"
+      >
+        <div class="alert-status" [class]="getAlertStatus(stat.totalAverage).class">
+          {{ getAlertStatus(stat.totalAverage).text }}
+        </div>
+        
+        <h4>{{ stat.project }}</h4>
+        
+        <div class="project-stat">
+          <span class="label">{{ getMetricStatusIcon(stat.qualite) }} Qualité:</span>
+          <span [style.color]="progressBarColor(stat.qualite)" class="value">
+            {{ stat.qualite?.toFixed(1) ?? 'N/A' }}%
+          </span>
+        </div>
+        
+        <div class="project-stat">
+          <span class="label">{{ getMetricStatusIcon(stat.delai) }} Délai:</span>
+          <span [style.color]="progressBarColor(stat.delai)" class="value">
+            {{ stat.delai?.toFixed(1) ?? 'N/A' }}%
+          </span>
+        </div>
+        
+        <div class="project-stat">
+          <span class="label">{{ getMetricStatusIcon(stat.cout) }} Coût:</span>
+          <span [style.color]="progressBarColor(stat.cout)" class="value">
+            {{ stat.cout?.toFixed(1) ?? 'N/A' }}%
+          </span>
+        </div>
+        
+        <!-- Alert indicators -->
+        <div class="alert-indicators">
+          <small>
+            🔴 Critique: {{ getCriticalMetricsCount(stat) }} | 
+            🟡 Attention: {{ getWarningMetricsCount(stat) }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed table with alert highlights -->
+    <div class="table-wrapper">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Qualité Avg (%)</th>
+            <th>Qualité Count</th>
+            <th>Qualité Min (%)</th>
+            <th>Qualité Max (%)</th>
+            <th>Délai Avg (%)</th>
+            <th>Délai Count</th>
+            <th>Délai Min (%)</th>
+            <th>Délai Max (%)</th>
+            <th>Coût Avg (%)</th>
+            <th>Coût Count</th>
+            <th>Coût Min (%)</th>
+            <th>Coût Max (%)</th>
+            <th>Total Average (%)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stat of stats">
+            <td><strong>{{ stat.project }}</strong></td>
+            
+            <td [class]="getTableCellAlertClass(stat.qualite)" 
+                [style.background-color]="progressBarColor(stat.qualite)">
+              {{ stat.qualite?.toFixed(1) ?? 'N/A' }}
+            </td>
+            <td>{{ stat.qualiteCount }}</td>
+            <td>{{ stat.qualiteMin?.toFixed(1) ?? 'N/A' }}</td>
+            <td>{{ stat.qualiteMax?.toFixed(1) ?? 'N/A' }}</td>
+            
+            <td [class]="getTableCellAlertClass(stat.delai)" 
+                [style.background-color]="progressBarColor(stat.delai)">
+              {{ stat.delai?.toFixed(1) ?? 'N/A' }}
+            </td>
+            <td>{{ stat.delaiCount }}</td>
+            <td>{{ stat.delaiMin?.toFixed(1) ?? 'N/A' }}</td>
+            <td>{{ stat.delaiMax?.toFixed(1) ?? 'N/A' }}</td>
+            
+            <td [class]="getTableCellAlertClass(stat.cout)" 
+                [style.background-color]="progressBarColor(stat.cout)">
+              {{ stat.cout?.toFixed(1) ?? 'N/A' }}
+            </td>
+            <td>{{ stat.coutCount }}</td>
+            <td>{{ stat.coutMin?.toFixed(1) ?? 'N/A' }}</td>
+            <td>{{ stat.coutMax?.toFixed(1) ?? 'N/A' }}</td>
+            
+            <td [class]="getTableCellAlertClass(stat.totalAverage)" 
+                [style.background-color]="progressBarColor(stat.totalAverage)">
+              {{ stat.totalAverage?.toFixed(1) ?? 'N/A' }}
+            </td>
+            
+            <td>
+              <span class="alert-status" [class]="getAlertStatus(stat.totalAverage).class">
+                {{ getAlertStatus(stat.totalAverage).text }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading && !stats.length" class="loading">
+  ⚠️ Aucune donnée statistique disponible.
+</div>
+
+<!-- Alert message display -->
+<div *ngIf="alertMessage" class="alert-message">
+  {{ alertMessage }}
+</div>

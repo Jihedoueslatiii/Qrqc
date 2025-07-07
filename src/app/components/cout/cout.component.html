@@ -90,7 +90,7 @@
   <div *ngIf="!loading && !error && couts.length > 0" class="kpi-tables-container">
     <div *ngFor="let group of groupedByKPI" class="kpi-table-group">
     <div class="kpi-header">
-  <h3>KPI: {{ group.kpi }}</h3>
+  <h3>Programme: {{ group.kpi }}</h3>
   <div class="header-actions">
     <button class="btn-add-row" (click)="addNewRow(group.kpi)" title="Ajouter une ligne">
       <i class="fas fa-plus"></i>

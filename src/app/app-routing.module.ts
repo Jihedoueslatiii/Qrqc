@@ -18,6 +18,8 @@ import { OtdProjetComponent } from './components/otd-projet/otd-projet.component
 import { KpiIpProjetComponent } from './components/kpi-ip-projet/kpi-ip-projet.component';
 import { KpiListComponent } from './components/kpi-list/kpi-list.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
+import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
+import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
 
 const routes: Routes = [
     {path:'',component:WelcomeComponent},
@@ -37,6 +39,9 @@ const routes: Routes = [
       { path: 'projetip', component: KpiIpProjetComponent },
             { path: 'kpi', component: KpiListComponent },
                         { path: 'doc', component: DocumentationComponent },
+                        {path: 'stats', component: DashboardStatsComponent },
+                                                {path: 'mail', component: SendKpiComponent },
+
 
 
 

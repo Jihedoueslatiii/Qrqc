@@ -505,6 +505,20 @@
   font-weight: bold;
   text-align: center;
 }
+.result-cell.good {
+  color: #4caf50;
+}
+
+.result-cell.bad {
+  color: #f44336;
+}
+.result-cell {
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.3s ease;
+}
+
+
 .btn-downtime {
   margin-left: 10px;
   background: #ffc107;

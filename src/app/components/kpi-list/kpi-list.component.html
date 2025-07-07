@@ -7,24 +7,24 @@
 <!-- Modal pour ajouter un KPI -->
 <div *ngIf="showAddKpiModal" class="modal-overlay">
   <div class="modal-content">
-    <h3>Ajouter un nouveau KPI</h3>
+    <h3>Ajouter un nouveau Programme</h3>
 
-    <label>Nom du KPI:</label>
+    <label>Nom du programme:</label>
     <input class="form-control mb-2" [(ngModel)]="newKpi.kpi" />
 
-    <h5 class="mt-3">🎯 Module Coût</h5>
+    <h3 class="mt-3">🎯 KPI Coût</h3>
     <label>Pilote:</label>
     <input class="form-control mb-2" [(ngModel)]="newKpi.cout.pilote" />
     <label>Objectif (%):</label>
     <input class="form-control mb-2" type="number" [(ngModel)]="newKpi.cout.objectif" />
 
-    <h5 class="mt-3">⏱️ Module Délai</h5>
+    <h3 class="mt-3">⏱️ KPI Délai</h3>
     <label>Pilote:</label>
     <input class="form-control mb-2" [(ngModel)]="newKpi.delai.pilote" />
     <label>Objectif (%):</label>
     <input class="form-control mb-2" type="number" [(ngModel)]="newKpi.delai.objectif" />
 
-    <h5 class="mt-3">✅ Module Qualité</h5>
+    <h3 class="mt-3">✅ KPI Qualité</h3>
     <label>Pilote:</label>
     <input class="form-control mb-2" [(ngModel)]="newKpi.qualite.pilote" />
     <label>Objectif (%):</label>
@@ -78,7 +78,7 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th (click)="toggleSort('kpi')">KPI {{ sortField === 'kpi' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
+        <th (click)="toggleSort('kpi')">Porgramme {{ sortField === 'kpi' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
         <th (click)="toggleSort('pilote')">Pilote {{ sortField === 'pilote' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
         <th (click)="toggleSort('objectif')">Objectif {{ sortField === 'objectif' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</th>
       </tr>
