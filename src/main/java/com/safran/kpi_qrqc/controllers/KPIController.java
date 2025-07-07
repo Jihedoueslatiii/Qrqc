@@ -1,11 +1,14 @@
 package com.safran.kpi_qrqc.controllers;
 
 import com.safran.kpi_qrqc.Interfaces.KPIApi;
+import com.safran.kpi_qrqc.Service.SlackService;
 import com.safran.kpi_qrqc.entities.KPI;
 import com.safran.kpi_qrqc.entities.ProductionData;
 import com.safran.kpi_qrqc.repository.KPIRepo;
 import com.safran.kpi_qrqc.repository.ProductionDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -17,6 +20,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class KPIController implements KPIApi {
+    @Autowired
+    private SlackService slackService;
 
     @Autowired
     private KPIRepo kpiRepository;
@@ -89,5 +94,10 @@ public class KPIController implements KPIApi {
             kpi.setResults(results);
             kpiRepository.save(kpi);
         });
+    }
+    @GetMapping("/test-slack")
+    public ResponseEntity<String> testSlack() {
+        slackService.sendSlackMessage("🚀 Test alert from KPI system!");
+        return ResponseEntity.ok("Slack message sent!");
     }
 }
