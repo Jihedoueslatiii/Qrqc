@@ -33,6 +33,7 @@ import { KpiListComponent } from './components/kpi-list/kpi-list.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
 import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
 import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
+import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-analysis.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,7 +57,8 @@ import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
     KpiListComponent,
     DocumentationComponent,
     DashboardStatsComponent,
-    SendKpiComponent
+    SendKpiComponent,
+    GeminiAnalysisComponent,
   ],
   imports: [
     BrowserModule,

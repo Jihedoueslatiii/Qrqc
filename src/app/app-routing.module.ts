@@ -20,6 +20,7 @@ import { KpiListComponent } from './components/kpi-list/kpi-list.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
 import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
 import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
+import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-analysis.component';
 
 const routes: Routes = [
     {path:'',component:WelcomeComponent},
@@ -41,6 +42,8 @@ const routes: Routes = [
                         { path: 'doc', component: DocumentationComponent },
                         {path: 'stats', component: DashboardStatsComponent },
                                                 {path: 'mail', component: SendKpiComponent },
+
+                                                {path: 'gemini', component: GeminiAnalysisComponent },
 
 
 

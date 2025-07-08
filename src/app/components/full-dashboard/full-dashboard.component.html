@@ -1,82 +1,85 @@
 <app-bar></app-bar>
 
-<div class="dashboard-container" style="display: flex; justify-content: center; padding: 2rem;">
-  <div class="dashboard-content-wrapper" style="max-width: 900px; width: 100%;">
+<div class="dashboard-container">
+  <div class="dashboard-content-wrapper">
 
-    <div *ngIf="loading" class="loading-state" style="text-align: center;">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
       <div class="loading-spinner"></div>
       <p class="loading-text">⏳ Chargement des données...</p>
     </div>
 
-    <div *ngIf="error" class="error-state" style="text-align: center;">
+    <!-- Error State -->
+    <div *ngIf="error" class="error-state">
       <div class="error-icon">⚠️</div>
       <p class="error-message">{{ error }}</p>
       <button class="retry-btn" (click)="loadData()">Réessayer</button>
     </div>
 
+    <!-- Main Dashboard Content -->
     <div *ngIf="!loading && !error" class="dashboard-content">
 
-      <header class="dashboard-header" style="text-align: center; margin-bottom: 1.5rem;">
+      <!-- Dashboard Header -->
+      <header class="dashboard-header">
         <h1 class="dashboard-title">📊 Tableau de Bord Qualité, Coût et Délai</h1>
         <p class="dashboard-subtitle">Visualisation des KPIs par programme</p>
       </header>
 
- <div class="filter-container" style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-  
-  <!-- Existing KPI filter -->
-  <div class="filter-group" *ngIf="selectedCategory" style="min-width: 200px;">
-    <label for="kpi-select">Programme</label>
-    <select id="kpi-select" [(ngModel)]="selectedKPI" (change)="applyFilters()" style="width: 100%; padding: 0.3rem;">
-      <option value="">-- Tous les KPIs --</option>
-      <option *ngFor="let kpi of filteredKPIs" [value]="kpi">{{ kpi }}</option>
-    </select>
-  </div>
+      <!-- Filter Section -->
+      <div class="filter-container">
+        
+        <!-- Programme Filter -->
+        <div class="filter-group" *ngIf="selectedCategory">
+          <label for="kpi-select">Programme</label>
+          <select id="kpi-select" [(ngModel)]="selectedKPI" (change)="applyFilters()">
+            <option value="">-- Tous les KPIs --</option>
+            <option *ngFor="let kpi of filteredKPIs" [value]="kpi">{{ kpi }}</option>
+          </select>
+        </div>
 
-  <!-- Existing Pilote filter -->
-  <div class="filter-group" *ngIf="selectedCategory" style="min-width: 200px;">
-    <label for="pilote-select">Pilote</label>
-    <select id="pilote-select" [(ngModel)]="selectedPilote" (change)="applyFilters()" style="width: 100%; padding: 0.3rem;">
-      <option value="">-- Tous les pilotes --</option>
-      <option *ngFor="let pilote of uniquePilotes" [value]="pilote">{{ pilote }}</option>
-    </select>
-  </div>
+        <!-- Pilote Filter -->
+        <div class="filter-group" *ngIf="selectedCategory">
+          <label for="pilote-select">Pilote</label>
+          <select id="pilote-select" [(ngModel)]="selectedPilote" (change)="applyFilters()">
+            <option value="">-- Tous les pilotes --</option>
+            <option *ngFor="let pilote of uniquePilotes" [value]="pilote">{{ pilote }}</option>
+          </select>
+        </div>
 
-  <!-- New Date filters -->
-  <div class="filter-group" style="min-width: 200px;">
-    <label for="start-date">Date début</label>
-    <input id="start-date" type="date" [(ngModel)]="filterStartDate" (change)="applyFilters()" style="width: 100%; padding: 0.3rem;" />
-  </div>
+        <!-- Date Filters -->
+        <div class="filter-group">
+          <label for="start-date">Date début</label>
+          <input id="start-date" type="date" [(ngModel)]="filterStartDate" (change)="applyFilters()" />
+        </div>
 
-  <div class="filter-group" style="min-width: 200px;">
-    <label for="end-date">Date fin</label>
-    <input id="end-date" type="date" [(ngModel)]="filterEndDate" (change)="applyFilters()" style="width: 100%; padding: 0.3rem;" />
-  </div>
-<div class="filter-actions" style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div class="filter-group">
+          <label for="end-date">Date fin</label>
+          <input id="end-date" type="date" [(ngModel)]="filterEndDate" (change)="applyFilters()" />
+        </div>
 
+        <!-- Filter Actions -->
+        <div class="filter-actions">
+          <button (click)="resetAllFilters()" type="button" class="btn-reset">
+            🔄 Restaurer Tout
+          </button>
+        </div>
 
-  <button (click)="resetAllFilters()" type="button" class="btn-reset" style="padding: 0.4rem 0.8rem; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
-    Restaurer Tout
-  </button>
+      </div>
 
-</div>
-
-</div>
-
-
-      <!-- Show all 3 categories when "all" selected -->
+      <!-- All Categories View -->
       <section *ngIf="selectedCategory === 'all'" class="kpi-section all-categories">
         <div *ngFor="let cat of categories" class="category-section">
-          <div class="section-header" style="text-align: center;">
+          <div class="section-header">
             <h2 class="section-title">
               <span class="section-icon">{{ getSectionIconFor(cat) }}</span>
               {{ cat | titlecase }}
-              <span *ngIf="selectedKPI">- KPI: {{ selectedKPI }}</span>
+              <span *ngIf="selectedKPI" class="kpi-badge">- KPI: {{ selectedKPI }}</span>
             </h2>
           </div>
-          <div class="chart-grid two-column" style="display: flex; justify-content: center;">
-            <div class="chart-card" style="max-width: 600px; width: 100%; margin: 0 auto;">
-              <h3 class="chart-title" style="text-align: center;">Tendances (Ligne)</h3>
-              <div class="chart-wrapper" style="position: relative; height: 350px;">
+          <div class="chart-grid">
+            <div class="chart-card full-width">
+              <h3 class="chart-title">📈 Tendances Temporelles</h3>
+              <div class="chart-wrapper">
                 <canvas baseChart
                   [data]="getLineChartDataByCategory(cat)"
                   [options]="commonChartOptions"
@@ -88,68 +91,70 @@
         </div>
       </section>
 
-<section class="kpi-by-programme-section" *ngIf="filteredKPIs.length > 0 && !selectedKPI && !selectedPilote">
-  <h2 style="text-align: center; margin-bottom: 1rem;">📋 Analyse par Programme</h2>
-
-  <div *ngFor="let kpi of filteredKPIs" class="programme-group" style="margin-bottom: 3rem;">
-    <h3 style="text-align: center; margin-bottom: 1rem;">Programme: {{ kpi }}</h3>
-    
-   <div class="charts-row" 
-     style="display: flex; justify-content: space-between; gap: 2rem; flex-wrap: nowrap; max-width: 1300px; margin: 0 auto; margin-left: -80px;">
-
-      <div class="chart-card" 
-           style="flex: 1 1 0; max-width: 420px; background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); height: 370px; display: flex; flex-direction: column;">
-        <h4 style="text-align: center;">Qualité - {{ kpi }}</h4>
-        <div style="flex-grow: 1; position: relative;">
-          <canvas baseChart
-                  [data]="prepareBarChart(filteredQualites, kpi, 'Qualité')"
-                  [options]="commonChartOptions"
-                  chartType="bar">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" 
-           style="flex: 1 1 0; max-width: 420px; background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); height: 370px; display: flex; flex-direction: column;">
-        <h4 style="text-align: center;">Coût - {{ kpi }}</h4>
-        <div style="flex-grow: 1; position: relative;">
-          <canvas baseChart
-                  [data]="prepareBarChart(filteredCouts, kpi, 'Coût')"
-                  [options]="commonChartOptions"
-                  chartType="bar">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="chart-card" 
-           style="flex: 1 1 0; max-width: 420px; background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); height: 370px; display: flex; flex-direction: column;">
-        <h4 style="text-align: center;">Délai - {{ kpi }}</h4>
-        <div style="flex-grow: 1; position: relative;">
-          <canvas baseChart
-                  [data]="prepareBarChart(filteredDelais, kpi, 'Délai')"
-                  [options]="commonChartOptions"
-                  chartType="bar">
-          </canvas>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-
-      <!-- Combined big bar chart for all KPIs in selected category, no KPI or pilote filter -->
-      <section *ngIf="selectedCategory !== 'all' && selectedCategory && !selectedKPI && !selectedPilote" class="combined-kpi-chart" style="margin-bottom: 2rem;">
-        <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
-          <h2>
-            <span class="section-icon">{{ getSectionIcon() }}</span> 
-            {{ selectedCategory | titlecase }} - Tous les KPIs
+      <!-- Programme Analysis Section -->
+      <section class="kpi-by-programme-section" *ngIf="filteredKPIs.length > 0 && !selectedKPI && !selectedPilote">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">📋</span>
+            Analyse par Programme
           </h2>
         </div>
-        <div class="chart-card" style="max-width: 700px; margin: 0 auto; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-          <h3 style="text-align: center; margin-bottom: 1rem;">Résultats Moyens par KPI (Histogramme)</h3>
-          <div style="position: relative; height: 400px;">
+
+        <div *ngFor="let kpi of filteredKPIs" class="programme-group">
+          <h3>🎯 Programme: {{ kpi }}</h3>
+          
+          <div class="charts-row">
+            <!-- Quality Chart -->
+            <div class="chart-card">
+              <h4>✅ Qualité - {{ kpi }}</h4>
+              <div class="chart-wrapper">
+                <canvas baseChart
+                        [data]="prepareBarChart(filteredQualites, kpi, 'Qualité')"
+                        [options]="commonChartOptions"
+                        chartType="bar">
+                </canvas>
+              </div>
+            </div>
+
+            <!-- Cost Chart -->
+            <div class="chart-card">
+              <h4>💰 Coût - {{ kpi }}</h4>
+              <div class="chart-wrapper">
+                <canvas baseChart
+                        [data]="prepareBarChart(filteredCouts, kpi, 'Coût')"
+                        [options]="commonChartOptions"
+                        chartType="bar">
+                </canvas>
+              </div>
+            </div>
+
+            <!-- Delay Chart -->
+            <div class="chart-card">
+              <h4>⏰ Délai - {{ kpi }}</h4>
+              <div class="chart-wrapper">
+                <canvas baseChart
+                        [data]="prepareBarChart(filteredDelais, kpi, 'Délai')"
+                        [options]="commonChartOptions"
+                        chartType="bar">
+                </canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Combined KPI Chart -->
+      <section *ngIf="selectedCategory !== 'all' && selectedCategory && !selectedKPI && !selectedPilote" 
+               class="combined-kpi-chart">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">{{ getSectionIcon() }}</span> 
+            {{ selectedCategory | titlecase }} - Vue d'ensemble
+          </h2>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">📊 Résultats Moyens par KPI</h3>
+          <div class="chart-wrapper">
             <canvas baseChart
               [data]="getBarChartDataByCategory(selectedCategory)"
               [options]="commonChartOptions"
@@ -159,19 +164,21 @@
         </div>
       </section>
 
-      <!-- Show single category if selectedCategory !== 'all' -->
+      <!-- Single Category View -->
       <section *ngIf="selectedCategory !== 'all' && selectedCategory" class="kpi-section">
-        <div class="section-header" style="text-align: center;">
+        <div class="section-header">
           <h2 class="section-title">
-            <span class="section-icon">{{ getSectionIcon() }}</span> {{ selectedCategory | titlecase }}
-            <span *ngIf="selectedKPI">- KPI: {{ selectedKPI }}</span>
+            <span class="section-icon">{{ getSectionIcon() }}</span> 
+            {{ selectedCategory | titlecase }}
+            <span *ngIf="selectedKPI" class="kpi-badge">- KPI: {{ selectedKPI }}</span>
           </h2>
         </div>
 
-        <div class="chart-grid two-column" style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
-          <div class="chart-card" style="max-width: 450px; width: 100%; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);">
-            <h3 class="chart-title" style="text-align: center;">Résultats vs Objectif (Histogramme)</h3>
-            <div class="chart-wrapper" style="position: relative; height: 350px;">
+        <div class="chart-grid two-column">
+          <!-- Bar Chart -->
+          <div class="chart-card">
+            <h3 class="chart-title">📊 Résultats vs Objectif</h3>
+            <div class="chart-wrapper">
               <canvas baseChart
                 [data]="barChartData"
                 [options]="commonChartOptions"
@@ -180,9 +187,10 @@
             </div>
           </div>
 
-          <div class="chart-card" style="max-width: 450px; width: 100%; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);">
-            <h3 class="chart-title" style="text-align: center;">Tendances (Ligne)</h3>
-            <div class="chart-wrapper" style="position: relative; height: 350px;">
+          <!-- Line Chart -->
+          <div class="chart-card">
+            <h3 class="chart-title">📈 Évolution Temporelle</h3>
+            <div class="chart-wrapper">
               <canvas baseChart
                 [data]="lineChartData"
                 [options]="commonChartOptions"

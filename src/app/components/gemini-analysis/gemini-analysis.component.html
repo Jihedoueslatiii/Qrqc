@@ -1,0 +1,269 @@
+<app-bar></app-bar>
+<div class="gemini-analysis-container">
+  <div class="header">
+    <h2>
+      <i class="fas fa-brain"></i>
+      Analyse  AI - Dashboard KPI
+    </h2>
+    <p class="subtitle">Obtenez des recommandations intelligentes et des prédictions basées sur vos données KPI</p>
+  </div>
+
+  <!-- Configuration Form -->
+  <div class="analysis-form" [formGroup]="analysisForm">
+    <div class="form-section">
+      <h3>Configuration de l'analyse</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="analysisType">Type d'analyse</label>
+          <select id="analysisType" formControlName="analysisType" class="form-control">
+            <option value="" disabled>Sélectionnez un type d'analyse</option>
+            <option *ngFor="let type of analysisTypes" [value]="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pilote">Pilote (Optionnel)</label>
+          <select id="pilote" formControlName="pilote" class="form-control">
+            <option value="">Tous les pilotes</option>
+            <option *ngFor="let pilote of pilotes" [value]="pilote">
+              {{ pilote }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="kpi">KPI (Optionnel)</label>
+          <select id="kpi" formControlName="kpi" class="form-control">
+            <option value="">Tous les KPI</option>
+            <option *ngFor="let kpiInfo of kpiInfos" [value]="kpiInfo.kpi">
+              {{ kpiInfo.kpi }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dateStart">Date de début</label>
+          <input type="date" id="dateStart" formControlName="dateStart" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="dateEnd">Date de fin</label>
+          <input type="date" id="dateEnd" formControlName="dateEnd" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="checkbox-group">
+          <h4>Sources de données</h4>
+          <div class="checkbox-item">
+            <input type="checkbox" id="includeQualite" formControlName="includeQualite">
+            <label for="includeQualite">Inclure les données de Qualité</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="includeCout" formControlName="includeCout">
+            <label for="includeCout">Inclure les données de Coût</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="includeDelai" formControlName="includeDelai">
+            <label for="includeDelai">Inclure les données de Délai</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="onAnalyze()"
+          [disabled]="analysisForm.invalid || analyzing"
+        >
+          <i class="fas fa-analytics" *ngIf="!analyzing"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="analyzing"></i>
+          {{ analyzing ? 'Analyse en cours...' : 'Lancer l\'analyse' }}
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="onReset()"
+          [disabled]="analyzing"
+        >
+          <i class="fas fa-undo"></i>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="analyzing">
+    <div class="loading-spinner">
+      <i class="fas fa-brain fa-spin"></i>
+    </div>
+    <p> AI analyse vos données KPI...</p>
+    <div class="loading-progress">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3>Erreur d'analyse</h3>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="onAnalyze()">
+      <i class="fas fa-redo"></i>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div class="analysis-results" *ngIf="analysisResult && !analyzing">
+    <div class="results-header">
+      <h3>
+        <i class="fas fa-chart-line"></i>
+        Résultats de l'analyse 
+      </h3>
+      <button class="btn btn-outline" (click)="onExportResults()">
+        <i class="fas fa-download"></i>
+        Exporter
+      </button>
+    </div>
+
+    <!-- Main Analysis -->
+    <div class="result-section analysis-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-microscope"></i>
+          Analyse générale
+        </h4>
+      </div>
+      <div class="analysis-content">
+        <p>{{ analysisResult.analysis }}</p>
+      </div>
+    </div>
+
+    <!-- Predictions -->
+    <div class="result-section predictions-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-crystal-ball"></i>
+          Prédictions
+        </h4>
+      </div>
+      <div class="predictions-content">
+        <div class="prediction-card">
+          <div class="prediction-value">
+            <span class="value">{{ analysisResult.predictions.nextPeriod.toFixed(1) }}%</span>
+            <span class="label">Prédiction prochaine période</span>
+          </div>
+          <div class="prediction-confidence">
+            <span class="confidence">{{ analysisResult.predictions.confidence.toFixed(1) }}%</span>
+            <span class="label">Confiance</span>
+          </div>
+          <div class="prediction-trend">
+            <span class="trend-icon {{ getTrendClass(analysisResult.predictions.trend) }}">
+              {{ getTrendIcon(analysisResult.predictions.trend) }}
+            </span>
+            <span class="trend-label">{{ analysisResult.predictions.trend }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="result-section recommendations-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-lightbulb"></i>
+          Recommandations
+        </h4>
+      </div>
+      <div class="recommendations-content">
+        <div class="recommendation-list">
+          <div class="recommendation-item" *ngFor="let recommendation of analysisResult.recommendations; let i = index">
+            <div class="recommendation-number">{{ i + 1 }}</div>
+            <div class="recommendation-text">{{ recommendation }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="result-section insights-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-eye"></i>
+          Insights clés
+        </h4>
+      </div>
+      <div class="insights-content">
+        <div class="insight-list">
+          <div class="insight-item" *ngFor="let insight of analysisResult.insights">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ insight }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Factors -->
+    <div class="result-section risks-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-exclamation-triangle"></i>
+          Facteurs de risque
+        </h4>
+      </div>
+      <div class="risks-content">
+        <div class="risk-list">
+          <div class="risk-item" *ngFor="let risk of analysisResult.riskFactors">
+            <i class="fas fa-warning"></i>
+            <span>{{ risk }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Summary -->
+    <div class="result-section data-summary-section">
+      <div class="section-header">
+        <h4>
+          <i class="fas fa-database"></i>
+          Résumé des données analysées
+        </h4>
+      </div>
+      <div class="data-summary-content">
+        <div class="data-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ rawData.length }}</span>
+            <span class="stat-label">Points de données</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ getUniqueKpiCount() }}</span>
+            <span class="stat-label">KPI uniques</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ getUniquePiloteCount() }}</span>
+            <span class="stat-label">Pilotes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!analysisResult && !analyzing && !error">
+    <div class="empty-icon">
+      <i class="fas fa-robot"></i>
+    </div>
+    <h3>Prêt pour l'analyse</h3>
+  </div>
+</div>
