@@ -1,0 +1,372 @@
+<app-bar></app-bar>
+<div class="dashboard-container container mx-auto p-4">
+  <h1 class="text-2xl font-bold">📊 Tableau de Bord QRQC Niveau 1</h1>
+  <p class="text-lg mb-6">Suivi des plans d'action pour Qualité, Coût et Délai</p>
+
+  <!-- Stats Cards -->
+  <div class="average-kpi-cards">
+    <div class="card" [ngClass]="getAlertClass(averageQualite)" (click)="toggleSection('qualite')">
+      <h3>Qualité Moyenne</h3>
+      <p>{{ averageQualite?.toFixed(2) ?? '--' }}%</p>
+    </div>
+    <div class="card" [ngClass]="getAlertClass(averageDelai)" (click)="toggleSection('delai')">
+      <h3>Délai Moyen</h3>
+      <p>{{ averageDelai?.toFixed(2) ?? '--' }}%</p>
+    </div>
+    <div class="card" [ngClass]="getAlertClass(averageCout)" (click)="toggleSection('cout')">
+      <h3>Coût Moyen</h3>
+      <p>{{ averageCout?.toFixed(2) ?? '--' }}%</p>
+    </div>
+  </div>
+
+  <!-- Qualité Section -->
+  <div *ngIf="showQualite" class="mb-12">
+    <h2 class="text-xl font-semibold">Qualité</h2>
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>KPI</label>
+        <select [(ngModel)]="selectedKPI.qualite" (change)="applyFilters('qualite')">
+          <option value="">Tous les KPIs</option>
+          <option *ngFor="let kpi of filteredKPIs.qualite; trackBy: trackByKPI" [value]="kpi">{{ kpi }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.qualite" (change)="applyFilters('qualite')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.qualite" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.qualite" (change)="applyFilters('qualite')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.qualite" (change)="applyFilters('qualite')" />
+      </div>
+      <div>
+        <label>Semaine</label>
+        <input type="number" [(ngModel)]="filterSemaine.qualite" (change)="applyFilters('qualite')" placeholder="Numéro de semaine" min="1" max="53" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('qualite')">Réinitialiser</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card" *ngFor="let stat of qualiteStats">
+        <h3>
+          {{ stat.title }}
+          <span class="trend-icon">{{ getTrendIcon(stat.trend) }}</span>
+        </h3>
+        <p>{{ stat.value }} {{ stat.unit }}</p>
+      </div>
+    </div>
+
+    <!-- Global Chart -->
+    <h3 class="text-xl font-semibold">Courbe Globale de Qualité</h3>
+    <div class="chart-container">
+      <canvas #qualiteGlobalChart *ngIf="!loading.qualite && !error.qualite && globalChartData.qualite.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.qualite && !error.qualite && !globalChartData.qualite.labels?.length">
+        Aucune donnée disponible pour la courbe globale de Qualité.
+      </div>
+      <div class="text-center" *ngIf="loading.qualite">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.qualite">{{ error.qualite }}</div>
+    </div>
+
+    <!-- KPI Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.qualite === ''}" (click)="selectProgram('qualite', '')">Tous</button>
+      <button *ngFor="let kpi of filteredKPIs.qualite; trackBy: trackByKPI" class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.qualite === kpi}" (click)="selectProgram('qualite', kpi)">{{ kpi }}</button>
+    </div>
+
+    <!-- Global Action Plans -->
+    <h3 class="text-xl font-semibold">📋 Tous les plans d'action liés à Qualité</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Qualité').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Qualité').length">
+        <option value="">Sélectionner un plan d'action</option>
+        <option *ngFor="let analyse of getAnalysesFor('Qualité'); trackBy: trackByAnalyse" [value]="analyse.id">
+          {{ analyse.probleme }} (Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}, KPI: {{ analyse.indicateur || 'Général' }})
+        </option>
+      </select>
+      <div>
+        <button class="btn btn-secondary" (click)="openAddModal('Qualité', '')">➕ Ajouter plan d'action</button>
+      </div>
+    </div>
+
+    <!-- Per-Program Charts and Action Plans -->
+    <ng-container *ngFor="let kpi of filteredKPIs.qualite; trackBy: trackByKPI">
+      <div class="mt-6" *ngIf="selectedProgram.qualite === '' || selectedProgram.qualite === kpi">
+        <h3 class="text-xl font-semibold">{{ kpi }}</h3>
+        <div class="chart-container">
+          <canvas [id]="'qualiteProgramChart_' + kpi"></canvas>
+        </div>
+        <h3 class="text-xl font-semibold">📋 Plans d'action liés à {{ kpi }} (Qualité)</h3>
+        <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+          <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Qualité', kpi).length">
+            😕 Aucune donnée disponible.
+          </div>
+          <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Qualité', kpi).length">
+            <option value="">Sélectionner un plan d'action</option>
+            <option *ngFor="let analyse of getAnalysesFor('Qualité', kpi); trackBy: trackByAnalyse" [value]="analyse.id">
+              Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}
+            </option>
+          </select>
+          <div>
+            <button class="btn btn-secondary" (click)="openAddModal('Qualité', kpi)">➕ Ajouter plan d'action</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Coût Section -->
+  <div *ngIf="showCout" class="mb-12">
+    <h2 class="text-xl font-semibold">Coût</h2>
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>KPI</label>
+        <select [(ngModel)]="selectedKPI.cout" (change)="applyFilters('cout')">
+          <option value="">Tous les KPIs</option>
+          <option *ngFor="let kpi of filteredKPIs.cout; trackBy: trackByKPI" [value]="kpi">{{ kpi }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.cout" (change)="applyFilters('cout')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.cout" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.cout" (change)="applyFilters('cout')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.cout" (change)="applyFilters('cout')" />
+      </div>
+      <div>
+        <label>Semaine</label>
+        <input type="number" [(ngModel)]="filterSemaine.cout" (change)="applyFilters('cout')" placeholder="Numéro de semaine" min="1" max="53" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('cout')">Réinitialiser</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card" *ngFor="let stat of coutStats">
+        <h3>
+          {{ stat.title }}
+          <span class="trend-icon">{{ getTrendIcon(stat.trend) }}</span>
+        </h3>
+        <p>{{ stat.value }} {{ stat.unit }}</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-semibold">Courbe Globale de Coût</h3>
+    <div class="chart-container">
+      <canvas #coutGlobalChart *ngIf="!loading.cout && !error.cout && globalChartData.cout.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.cout && !error.cout && !globalChartData.cout.labels?.length">
+        Aucune donnée disponible pour la courbe globale de Coût.
+      </div>
+      <div class="text-center" *ngIf="loading.cout">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.cout">{{ error.cout }}</div>
+    </div>
+
+    <!-- KPI Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.cout === ''}" (click)="selectProgram('cout', '')">Tous</button>
+      <button *ngFor="let kpi of filteredKPIs.cout; trackBy: trackByKPI" class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.cout === kpi}" (click)="selectProgram('cout', kpi)">{{ kpi }}</button>
+    </div>
+
+    <h3 class="text-xl font-semibold">📋 Tous les plans d'action liés à Coût</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Coût').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Coût').length">
+        <option value="">Sélectionner un plan d'action</option>
+        <option *ngFor="let analyse of getAnalysesFor('Coût'); trackBy: trackByAnalyse" [value]="analyse.id">
+          {{ analyse.probleme }} (Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}, KPI: {{ analyse.indicateur || 'Général' }})
+        </option>
+      </select>
+      <div>
+        <button class="btn btn-secondary" (click)="openAddModal('Coût', '')">➕ Ajouter plan d'action</button>
+      </div>
+    </div>
+
+    <ng-container *ngFor="let kpi of filteredKPIs.cout; trackBy: trackByKPI">
+      <div class="mt-6" *ngIf="selectedProgram.cout === '' || selectedProgram.cout === kpi">
+        <h3 class="text-xl font-semibold">{{ kpi }}</h3>
+        <div class="chart-container">
+          <canvas [id]="'coutProgramChart_' + kpi"></canvas>
+        </div>
+        <h3 class="text-xl font-semibold">📋 Plans d'action liés à {{ kpi }} (Coût)</h3>
+        <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+          <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Coût', kpi).length">
+            😕 Aucune donnée disponible.
+          </div>
+          <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Coût', kpi).length">
+            <option value="">Sélectionner un plan d'action</option>
+            <option *ngFor="let analyse of getAnalysesFor('Coût', kpi); trackBy: trackByAnalyse" [value]="analyse.id">
+              Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}
+            </option>
+          </select>
+          <div>
+            <button class="btn btn-secondary" (click)="openAddModal('Coût', kpi)">➕ Ajouter plan d'action</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Délai Section -->
+  <div *ngIf="showDelai" class="mb-12">
+    <h2 class="text-xl font-semibold">Délai</h2>
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>KPI</label>
+        <select [(ngModel)]="selectedKPI.delai" (change)="applyFilters('delai')">
+          <option value="">Tous les KPIs</option>
+          <option *ngFor="let kpi of filteredKPIs.delai; trackBy: trackByKPI" [value]="kpi">{{ kpi }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.delai" (change)="applyFilters('delai')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.delai" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.delai" (change)="applyFilters('delai')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.delai" (change)="applyFilters('delai')" />
+      </div>
+      <div>
+        <label>Semaine</label>
+        <input type="number" [(ngModel)]="filterSemaine.delai" (change)="applyFilters('delai')" placeholder="Numéro de semaine" min="1" max="53" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('delai')">Réinitialiser</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card" *ngFor="let stat of delaiStats">
+        <h3>
+          {{ stat.title }}
+          <span class="trend-icon">{{ getTrendIcon(stat.trend) }}</span>
+        </h3>
+        <p>{{ stat.value }} {{ stat.unit }}</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-semibold">Courbe Globale de Délai</h3>
+    <div class="chart-container">
+      <canvas #delaiGlobalChart *ngIf="!loading.delai && !error.delai && globalChartData.delai.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.delai && !error.delai && !globalChartData.delai.labels?.length">
+        Aucune donnée disponible pour la courbe globale de Délai.
+      </div>
+      <div class="text-center" *ngIf="loading.delai">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.delai">{{ error.delai }}</div>
+    </div>
+
+    <!-- KPI Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.delai === ''}" (click)="selectProgram('delai', '')">Tous</button>
+      <button *ngFor="let kpi of filteredKPIs.delai; trackBy: trackByKPI" class="btn btn-primary" [ngClass]="{'btn-active': selectedProgram.delai === kpi}" (click)="selectProgram('delai', kpi)">{{ kpi }}</button>
+    </div>
+
+    <h3 class="text-xl font-semibold">📋 Tous les plans d'action liés à Délai</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Délai').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Délai').length">
+        <option value="">Sélectionner un plan d'action</option>
+        <option *ngFor="let analyse of getAnalysesFor('Délai'); trackBy: trackByAnalyse" [value]="analyse.id">
+          {{ analyse.probleme }} (Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}, KPI: {{ analyse.indicateur || 'Général' }})
+        </option>
+      </select>
+      <div>
+        <button class="btn btn-secondary" (click)="openAddModal('Délai', '')">➕ Ajouter plan d'action</button>
+      </div>
+    </div>
+
+    <ng-container *ngFor="let kpi of filteredKPIs.delai; trackBy: trackByKPI">
+      <div class="mt-6" *ngIf="selectedProgram.delai === '' || selectedProgram.delai === kpi">
+        <h3 class="text-xl font-semibold">{{ kpi }}</h3>
+        <div class="chart-container">
+          <canvas [id]="'delaiProgramChart_' + kpi"></canvas>
+        </div>
+        <h3 class="text-xl font-semibold">📋 Plans d'action liés à {{ kpi }} (Délai)</h3>
+        <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+          <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Délai', kpi).length">
+            😕 Aucune donnée disponible.
+          </div>
+          <select class="plan-action-dropdown" *ngIf="getAnalysesFor('Délai', kpi).length">
+            <option value="">Sélectionner un plan d'action</option>
+            <option *ngFor="let analyse of getAnalysesFor('Délai', kpi); trackBy: trackByAnalyse" [value]="analyse.id">
+              Action: {{ analyse.planAction.action || 'N/A' }}, Pilote: {{ analyse.planAction.pilote || 'N/A' }}, Délai: {{ analyse.planAction.delai || 'N/A' }}, Statut: {{ analyse.planAction.statut || 'N/A' }}
+            </option>
+          </select>
+          <div>
+            <button class="btn btn-secondary" (click)="openAddModal('Délai', kpi)">➕ Ajouter plan d'action</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Add Modal -->
+  <div class="popup-backdrop" *ngIf="showAddModal">
+    <div class="popup-window">
+      <div class="popup-header">
+        <span>Ajouter une nouvelle analyse</span>
+        <button class="close-btn" (click)="closeAddModal()">✕</button>
+      </div>
+      <div class="popup-content">
+        <form>
+          <label>Date :</label>
+          <input type="date" [(ngModel)]="newAnalyse.date" name="date" />
+          <label>Semaine :</label>
+          <input type="number" [(ngModel)]="newAnalyse.semaine" name="semaine" />
+          <label>Indicateur :</label>
+          <input type="text" [(ngModel)]="newAnalyse.indicateur" name="indicateur" readonly />
+          <label>Problème :</label>
+          <input type="text" [(ngModel)]="newAnalyse.probleme" name="probleme" />
+          <label>Pourquoi :</label>
+          <textarea [(ngModel)]="newAnalyse.pourquoi" name="pourquoi"></textarea>
+          <p>Plan d'Action</p>
+          <label>Action :</label>
+          <input type="text" [(ngModel)]="newAnalyse.planAction.action" name="action" />
+          <label>Pilote :</label>
+          <input type="text" [(ngModel)]="newAnalyse.planAction.pilote" name="pilote" />
+          <label>Délai :</label>
+          <input type="date" [(ngModel)]="newAnalyse.planAction.delai" name="delai" />
+          <label>Statut :</label>
+          <select [(ngModel)]="newAnalyse.planAction.statut" name="statut">
+            <option value="NOT_STARTED">Non démarré</option>
+            <option value="IN_PROGRESS">En cours</option>
+            <option value="COMPLETED">Terminé</option>
+          </select>
+          <div class="form-buttons">
+            <button type="button" class="cancel-btn" (click)="closeAddModal()">Annuler</button>
+            <button type="button" class="submit-btn" (click)="addAnalyse()">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Template -->
+  <ng-template #loadingAnalyse>
+    <div class="text-center">⏳ Chargement...</div>
+  </ng-template>
+</div>

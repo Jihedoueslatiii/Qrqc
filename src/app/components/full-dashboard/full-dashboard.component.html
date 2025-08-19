@@ -32,7 +32,7 @@
         <div class="filter-group" *ngIf="selectedCategory">
           <label for="kpi-select">Programme</label>
           <select id="kpi-select" [(ngModel)]="selectedKPI" (change)="applyFilters()">
-            <option value="">-- Tous les KPIs --</option>
+            <option value="">-- Tous les Programmes --</option>
             <option *ngFor="let kpi of filteredKPIs" [value]="kpi">{{ kpi }}</option>
           </select>
         </div>

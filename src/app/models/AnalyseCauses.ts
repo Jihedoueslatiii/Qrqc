@@ -2,6 +2,7 @@ import { PlanAction } from "./PlanAction";
 
 
 export interface AnalyseCauses {
+  programme: any;
   id?: number;
   date: string;
   semaine: number;

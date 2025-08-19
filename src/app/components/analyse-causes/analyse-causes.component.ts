@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnalyseCausesService } from '../../services/analyse-causes.service';
 import { AnalyseCauses } from '../../models/AnalyseCauses';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-analyse-causes',
@@ -19,6 +20,18 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class AnalyseCausesComponent implements OnInit {
   analyseCauses: AnalyseCauses[] = [];
   loading = false;
+  displayedColumns: string[] = [
+    'date',
+    'semaine',
+    'indicateur',
+    'probleme',
+    'pourquoi',
+    'action',
+    'pilote',
+    'delai',
+    'statut',
+    'actions'
+  ];
 
   newAnalyse: AnalyseCauses = {
     date: '',
@@ -31,24 +44,30 @@ export class AnalyseCausesComponent implements OnInit {
       pilote: '',
       delai: '',
       statut: 'NOT_STARTED'
-    }
+    },
+    programme: undefined
   };
 
-  editingAnalyse: AnalyseCauses | null = null;
+  editingRowIndex: number | null = null;
+  formGroups: FormGroup[] = [];
   showAddModal = false;
-  showEditModal = false;
 
-  constructor(private analyseService: AnalyseCausesService) {}
+  constructor(
+    private analyseService: AnalyseCausesService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.fetchAll();
   }
 
+  // Fetch all analyses and initialize form groups
   fetchAll(): void {
     this.loading = true;
     this.analyseService.getAll().subscribe({
       next: data => {
         this.analyseCauses = data;
+        this.initializeFormGroups();
         this.loading = false;
       },
       error: err => {
@@ -56,6 +75,67 @@ export class AnalyseCausesComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // Initialize form groups for each row
+  initializeFormGroups(): void {
+    this.formGroups = this.analyseCauses.map(analyse =>
+      this.fb.group({
+        date: [analyse.date, Validators.required],
+        semaine: [analyse.semaine, [Validators.required, Validators.min(0)]],
+        indicateur: [analyse.indicateur, Validators.required],
+        probleme: [analyse.probleme, Validators.required],
+        pourquoi: [analyse.pourquoi, Validators.required],
+        action: [analyse.planAction?.action || '', Validators.required],
+        pilote: [analyse.planAction?.pilote || ''],
+        delai: [analyse.planAction?.delai || '', Validators.required],
+        statut: [analyse.planAction?.statut || 'NOT_STARTED', Validators.required]
+      })
+    );
+  }
+
+  // Get form group for a specific row
+  getFormGroup(index: number): FormGroup {
+    return this.formGroups[index];
+  }
+
+  // Start editing a row
+  startEditing(index: number, analyse: AnalyseCauses): void {
+    this.editingRowIndex = index;
+  }
+
+  // Save edited row
+  saveRow(index: number): void {
+    if (this.editingRowIndex === null || !this.formGroups[index].valid) return;
+
+    const updatedAnalyse: AnalyseCauses = {
+      ...this.analyseCauses[index],
+      ...this.formGroups[index].value,
+      planAction: {
+        action: this.formGroups[index].value.action,
+        pilote: this.formGroups[index].value.pilote,
+        delai: this.formGroups[index].value.delai,
+        statut: this.formGroups[index].value.statut
+      }
+    };
+
+    if (!updatedAnalyse.id) return;
+
+    this.analyseService.update(updatedAnalyse.id, updatedAnalyse).subscribe({
+      next: updatedAnalyse => {
+        this.analyseCauses[index] = updatedAnalyse;
+        this.editingRowIndex = null;
+      },
+      error: err => {
+        console.error('Erreur lors de la mise à jour', err);
+      }
+    });
+  }
+
+  // Cancel editing
+  cancelEditing(): void {
+    this.editingRowIndex = null;
+    this.initializeFormGroups(); // Reset form groups to current data
   }
 
   openAddModal() {
@@ -70,6 +150,7 @@ export class AnalyseCausesComponent implements OnInit {
     this.analyseService.create(this.newAnalyse).subscribe({
       next: createdAnalyse => {
         this.analyseCauses.push(createdAnalyse);
+        this.initializeFormGroups();
         this.resetForm();
         this.closeAddModal();
       },
@@ -91,7 +172,8 @@ export class AnalyseCausesComponent implements OnInit {
         pilote: '',
         delai: '',
         statut: 'NOT_STARTED'
-      }
+      },
+      programme: undefined
     };
   }
 
@@ -99,39 +181,13 @@ export class AnalyseCausesComponent implements OnInit {
     return analyse.id || index;
   }
 
-  // Edit modal handlers
-  openEditModal(analyse: AnalyseCauses) {
-    this.editingAnalyse = JSON.parse(JSON.stringify(analyse)); // deep clone
-    this.showEditModal = true;
-  }
-
-  closeEditModal() {
-    this.editingAnalyse = null;
-    this.showEditModal = false;
-  }
-
-  updateAnalyse(): void {
-    if (!this.editingAnalyse || !this.editingAnalyse.id) return;
-
-    this.analyseService.update(this.editingAnalyse.id, this.editingAnalyse).subscribe({
-      next: updatedAnalyse => {
-        const index = this.analyseCauses.findIndex(a => a.id === updatedAnalyse.id);
-        if (index !== -1) this.analyseCauses[index] = updatedAnalyse;
-        this.closeEditModal();
-      },
-      error: err => {
-        console.error('Erreur lors de la mise à jour', err);
-      }
-    });
-  }
-
-  // Delete handler
   deleteAnalyse(id: number) {
     if (!confirm('Voulez-vous vraiment supprimer cette analyse ?')) return;
 
     this.analyseService.delete(id).subscribe({
       next: () => {
         this.analyseCauses = this.analyseCauses.filter(a => a.id !== id);
+        this.initializeFormGroups();
       },
       error: err => {
         console.error('Erreur lors de la suppression', err);

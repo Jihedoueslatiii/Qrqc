@@ -57,6 +57,7 @@ body.sidebar-closed {
   transform: scale(1.05);
 }
 
+
 .nav-right {
   display: flex;
   align-items: center;
@@ -70,6 +71,9 @@ body.sidebar-closed {
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
+  padding: 0.5rem 0; /* Ajout d'un peu de padding vertical si besoin */
+    justify-content: center;
+
 }
 
 .nav-icons a {
@@ -80,6 +84,9 @@ body.sidebar-closed {
   padding: 0.3rem 0;
   position: relative;
   transition: color 0.3s ease;
+  cursor: pointer;
+  user-select: none; /* évite la sélection de texte au clic */
+  
 }
 
 .nav-icons a:hover {
@@ -106,6 +113,7 @@ body.sidebar-closed {
 .nav-icons a.active::after {
   width: 100%;
 }
+
 
 /* Sidebar Styles */
 .sidebar {

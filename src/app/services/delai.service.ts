@@ -44,3 +44,5 @@ export class DelaiService {
   }
   
 }
+
+export { Delai };

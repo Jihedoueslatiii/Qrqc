@@ -47,6 +47,10 @@ export class KpiIpService {
   getByHseTag(hseTag: boolean): Observable<KPI_IP[]> {
     return this.http.get<KPI_IP[]>(`${this.baseUrl}/hsetag/${hseTag}`);
   }
+  getAverageResultat(): Observable<number> {
+  return this.http.get<number>('/api/kpi-ip/average');
+}
+
 }
 export { KPI_IP };
 

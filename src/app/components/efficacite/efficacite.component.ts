@@ -64,7 +64,7 @@ export class EfficaciteComponent implements OnInit {
       };
     });
   }
-  kpiTitle: string = "KPI Coût = Efficacité (Fakher (Noura Back up))";
+  kpiTitle: string = "KPI Délai = OTD (Souha( Kais Back up)";
 editingTitle: boolean = false;
 
 editTitle() {

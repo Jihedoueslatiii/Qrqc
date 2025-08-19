@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,6 +38,8 @@ import { DocumentationComponent } from './components/documentation/documentation
 import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
 import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
 import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-analysis.component';
+import { MonitoringComponent } from './components/monitoring/monitoring.component';
+import { ProjectMonitoringComponent } from './components/project-monitoring/project-monitoring.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,6 +65,8 @@ import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-ana
     DashboardStatsComponent,
     SendKpiComponent,
     GeminiAnalysisComponent,
+    MonitoringComponent,
+    ProjectMonitoringComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,7 +76,11 @@ import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-ana
     DragDropModule,
     NgChartsModule ,
     ReactiveFormsModule,
-    
+ MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
     
     BrowserAnimationsModule,
       ToastrModule.forRoot({

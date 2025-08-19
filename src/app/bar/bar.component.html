@@ -9,8 +9,7 @@
   <div class="nav-right">
     <div class="nav-icons">
       <a routerLink="/mail" routerLinkActive="active">Configuration Reporting </a>
-      <a routerLink="/contact" routerLinkActive="active">Contact</a>
-      <a routerLink="/apropos" routerLinkActive="active">A propos</a>
+      <a routerLink="/kpi" routerLinkActive="active">Liste Des Programmes</a>
     </div>
 
     <!-- User dropdown section -->
@@ -36,14 +35,12 @@
   <ul class="menu">
     <li class="menu-item-dropdown" (click)="toggleDropdown('dashboards')">
       <a class="menu-item" [routerLink]="'/dashboards'" routerLinkActive="active" (click)="$event.preventDefault()">
-        <i class="fas fa-chart-line"></i>
-        <span class="menu-text">KPI PRODUIT</span>
+        <span class="menu-text">QRQC Niveau 1</span>
         <i class="fas fa-chevron-down dropdown-icon"></i>
       </a>
       <ul class="submenu" [class.open]="dropdownStates['dashboards']">
-                <li><a [routerLink]="'/kpi'" routerLinkActive="active">Listes Des Programmes</a></li>
 
-        <li><a [routerLink]="'/dashboard'" routerLinkActive="active">Dashboard</a></li>
+        <li><a [routerLink]="'/mon'" routerLinkActive="active">Dashboard QRQC NIV 1</a></li>
         <li><a [routerLink]="'/produitQ'" routerLinkActive="active">Qualité(Taux de NC Internes)</a></li>
         <li><a [routerLink]="'/Delai'" routerLinkActive="active">Délai(OTP)</a></li>
         <li><a [routerLink]="'/cout'" routerLinkActive="active">Coût(Efficience)</a></li>
@@ -52,11 +49,13 @@
     
    <li class="menu-item-dropdown" (click)="toggleDropdown('project-kpis')">
       <a class="menu-item" [routerLink]="'/project-kpis'" routerLinkActive="active" (click)="$event.preventDefault()">
-        <i class="fas fa-gauge"></i>
-        <span class="menu-text">Project KPIs</span>
+        
+        <span class="menu-text">QRQC Niveau 2</span>
         <i class="fas fa-chevron-down dropdown-icon"></i>
       </a>
       <ul class="submenu" [class.open]="dropdownStates['project-kpis']">
+                <li><a [routerLink]="'/projetDashboard'" routerLinkActive="active">Dashboard QRQC NIV 2</a></li>
+
         <li><a [routerLink]="'/efficacite'" routerLinkActive="active">KPI OTD</a></li>
         <li><a [routerLink]="'/project-kpis/qualite'" routerLinkActive="active">KPI Qualité</a></li>
         <li><a [routerLink]="'/projetotd'" routerLinkActive="active">KPI Efficacité (Coût)</a></li>
@@ -77,25 +76,21 @@
       </ul>
     </li>
     
-    
-    <li class="menu-item-dropdown" (click)="toggleDropdown('metrics')">
-      <a class="menu-item" [routerLink]="'/metrics'" routerLinkActive="active" (click)="$event.preventDefault()">
-        <i class="fas fa-chart-bar"></i>
-        <span class="menu-text">Metrics</span>
+ 
+    <li class="menu-item-dropdown" (click)="toggleDropdown('performance-reports')">
+      <a class="menu-item" [routerLink]="'/performance-reports'" routerLinkActive="active" (click)="$event.preventDefault()">
+        <i class="fas fa-chart-pie"></i>
+        <span class="menu-text">Dashboard</span>
         <i class="fas fa-chevron-down dropdown-icon"></i>
       </a>
-      <ul class="submenu" [class.open]="dropdownStates['metrics']">
-        <li><a [routerLink]="'/add-metric'" routerLinkActive="active">Add Metric</a></li>
-        <li><a [routerLink]="'/view-metrics'" routerLinkActive="active">View Metrics</a></li>
+      <ul class="submenu" [class.open]="dropdownStates['performance-reports']">
+        <li><a [routerLink]="'/visuals'" routerLinkActive="active">Statistiques</a></li>
+        <li><a [routerLink]="'/stats'" routerLinkActive="active">Details Programmes</a></li>
       </ul>
     </li>
-    
-
-    
-    
+     
     <li class="menu-item-dropdown" (click)="toggleDropdown('causes-plan')">
   <a class="menu-item" [routerLink]="'/causes-plan'" routerLinkActive="active" (click)="$event.preventDefault()">
-    <i class="fas fa-exclamation-triangle"></i>
     <span class="menu-text">Causes & Plan Action</span>
     <i class="fas fa-chevron-down dropdown-icon"></i>
   </a>
@@ -106,23 +101,34 @@
   </ul>
 </li>
 
+ <li class="menu-item-dropdown" (click)="toggleDropdown('causes-plan')">
+  <a class="menu-item" [routerLink]="'/causes-plan'" routerLinkActive="active" (click)="$event.preventDefault()">
+    <span class="menu-text">OJT</span>
+    <i class="fas fa-chevron-down dropdown-icon"></i>
+  </a>
+  <ul class="submenu" [class.open]="dropdownStates['causes-plan']">
     
-    <li class="menu-item-dropdown" (click)="toggleDropdown('performance-reports')">
-      <a class="menu-item" [routerLink]="'/performance-reports'" routerLinkActive="active" (click)="$event.preventDefault()">
-        <i class="fas fa-chart-pie"></i>
-        <span class="menu-text">Tableau de Board</span>
+  </ul>
+</li>
+
+
+
+    
+    <li class="menu-item-dropdown" (click)="toggleDropdown('metrics')">
+      <a class="menu-item" [routerLink]="'/gemini'" routerLinkActive="active" (click)="$event.preventDefault()">
+        <span class="menu-text">Analyse AI</span>
         <i class="fas fa-chevron-down dropdown-icon"></i>
       </a>
-      <ul class="submenu" [class.open]="dropdownStates['performance-reports']">
-        <li><a [routerLink]="'/kpi'" routerLinkActive="active">Programmes</a></li>
-        <li><a [routerLink]="'/visuals'" routerLinkActive="active">Statistiques</a></li>
-        <li><a [routerLink]="'/stats'" routerLinkActive="active">Details Programmes</a></li>
+      <ul class="submenu" [class.open]="dropdownStates['metrics']">
       </ul>
     </li>
     
+ 
+
+  
+    
     <li class="menu-item-dropdown" (click)="toggleDropdown('kpi-documentation')">
       <a class="menu-item" [routerLink]="'/kpi-documentation'" routerLinkActive="active" (click)="$event.preventDefault()">
-        <i class="fas fa-file-alt"></i>
         <span class="menu-text"> Documentation</span>
         <i class="fas fa-chevron-down dropdown-icon"></i>
       </a>

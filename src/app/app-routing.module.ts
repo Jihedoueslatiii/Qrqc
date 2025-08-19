@@ -21,6 +21,9 @@ import { DocumentationComponent } from './components/documentation/documentation
 import { DashboardStatsComponent } from './components/dashboard-stats/dashboard-stats.component';
 import { SendKpiComponent } from './components/send-kpi/send-kpi.component';
 import { GeminiAnalysisComponent } from './components/gemini-analysis/gemini-analysis.component';
+import { monitorEventLoopDelay } from 'perf_hooks';
+import { MonitoringComponent } from './components/monitoring/monitoring.component';
+import { ProjectMonitoringComponent } from './components/project-monitoring/project-monitoring.component';
 
 const routes: Routes = [
     {path:'',component:WelcomeComponent},
@@ -38,30 +41,19 @@ const routes: Routes = [
    { path: 'efficacite', component: EfficaciteComponent },
    { path: 'projetotd', component: OtdProjetComponent },
       { path: 'projetip', component: KpiIpProjetComponent },
-            { path: 'kpi', component: KpiListComponent },
-                        { path: 'doc', component: DocumentationComponent },
-                        {path: 'stats', component: DashboardStatsComponent },
-                                                {path: 'mail', component: SendKpiComponent },
+   { path: 'kpi', component: KpiListComponent },
+ { path: 'doc', component: DocumentationComponent },
+ {path: 'stats', component: DashboardStatsComponent },
+{path: 'mail', component: SendKpiComponent },
 
-                                                {path: 'gemini', component: GeminiAnalysisComponent },
-
-
-
+    {path: 'gemini', component: GeminiAnalysisComponent },
+  {path: 'projetDashboard', component: ProjectMonitoringComponent },
 
 
 
+                                                {path: 'mon', component: MonitoringComponent },
 
 
- 
-
-
-
-
-
-
-
-
-        
 
 
   {path:'bar',component:BarComponent}

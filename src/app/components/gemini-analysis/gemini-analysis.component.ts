@@ -6,7 +6,8 @@ import { CoutService } from 'src/app/services/cout.service';
 import { DelaiService } from 'src/app/services/delai.service';
 import { QualiteService } from 'src/app/services/qualite.service';
 import { KpiInfo, SharedKpiService } from 'src/app/services/shared-kpi.service';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export interface GeminiAnalysisRequest {
   kpiData: any[];
@@ -41,6 +42,8 @@ export interface GeminiAnalysisResponse {
 export class GeminiAnalysisComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
+  @ViewChild('analysisResults') analysisResults!: ElementRef;
+
   analysisForm!: FormGroup;
   kpiInfos: KpiInfo[] = [];
   pilotes: string[] = [];
@@ -336,6 +339,59 @@ export class GeminiAnalysisComponent implements OnInit, OnDestroy {
     }
   }
 
+onExportToPDF(): void {
+  if (this.analysisResults) {
+    const element = this.analysisResults.nativeElement;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let position = 40;
+      let heightLeft = imgHeight;
+
+      // Header
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Rapport d’analyse KPI', pageWidth / 2, 20, { align: 'center' });
+
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Généré le: ${new Date().toLocaleString()}`, pageWidth / 2, 30, { align: 'center' });
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight - position;
+
+      while (heightLeft > 0) {
+        position = 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position - (imgHeight - heightLeft), imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Page numbers
+      const totalPages = pdf.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(10);
+        pdf.text(`Page ${i} sur ${totalPages}`, pageWidth / 2, 290, { align: 'center' });
+      }
+
+      pdf.save(`gemini-analysis-${new Date().toISOString().split('T')[0]}.pdf`);
+    }).catch(error => {
+      console.error('Erreur génération PDF:', error);
+      this.error = 'Erreur lors de la génération du PDF';
+    });
+  }
+}
+
+
+
   getTrendIcon(trend: string): string {
     switch (trend) {
       case 'up': return '↗️';
@@ -363,7 +419,4 @@ export class GeminiAnalysisComponent implements OnInit, OnDestroy {
     const uniquePilotes = new Set(this.rawData.map(item => item.pilote));
     return uniquePilotes.size;
   }
-
-  
- 
 }

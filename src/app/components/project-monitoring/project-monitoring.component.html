@@ -1,0 +1,390 @@
+<app-bar></app-bar>
+<div class="dashboard-container container mx-auto p-4">
+  <h1 class="text-2xl font-bold">📊 Tableau de Bord QRQC Niveau 2</h1>
+  <p class="text-lg mb-6">Suivi des KPIs pour KPI IP, HSE Tag, Efficacité, OTD et AMDEC</p>
+
+  <!-- Stats Cards -->
+  <div class="average-kpi-cards grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="card card-clickable" [ngClass]="getAlertClass(averageEfficacite)" (click)="showSection('efficacite')">
+      <h3>Efficacité Moyenne</h3>
+      <p>{{ averageEfficacite?.toFixed(2) ?? '--' }}%</p>
+    </div>
+    <div class="card card-clickable" [ngClass]="getAlertClass(averageOtd)" (click)="showSection('otd')">
+      <h3>OTD Moyen</h3>
+      <p>{{ averageOtd?.toFixed(2) ?? '--' }}%</p>
+    </div>
+    <div class="card">
+      <h3>KPI Sécurité</h3>
+      <p>{{ totalHseTag }}</p>
+    </div>
+    <div class="card card-clickable" (click)="showSection('kpiIp')">
+      <h3>KPI IP</h3>
+      <p>{{ totalIp }}</p>
+    </div>
+    <div class="card">
+      <h3>AMDEC</h3>
+      <p>{{ amdecValue }}</p>
+    </div>
+  </div>
+
+  <!-- KPI IP Section -->
+  <div class="mb-12" *ngIf="visibleSection === 'kpiIp'">
+    <h2 class="text-xl font-semibold">KPI IP</h2>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>Semaine</label>
+        <select [(ngModel)]="selectedWeek.kpiIp" (change)="applyFilters('kpiIp')">
+          <option value="">Toutes les Semaines</option>
+          <option *ngFor="let week of filteredWeeks.kpiIp; trackBy: trackByWeek" [value]="week">{{ week }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.kpiIp" (change)="applyFilters('kpiIp')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.kpiIp" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.kpiIp" (change)="applyFilters('kpiIp')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.kpiIp" (change)="applyFilters('kpiIp')" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('kpiIp')">Réinitialiser</button>
+    </div>
+
+    <!-- KPI IP Stats -->
+    <h3 class="text-lg font-semibold">Résumé KPI IP</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card">
+        <h3>Total KPI IP</h3>
+        <p>{{ totalKpiIp }}</p>
+      </div>
+      <div class="card">
+        <h3>HSE Tag</h3>
+        <p>{{ totalHseTag }}</p>
+      </div>
+      <div class="card">
+        <h3>IP</h3>
+        <p>{{ totalIp }}</p>
+      </div>
+      <div class="card">
+        <h3>Pourcentage HSE</h3>
+        <p>{{ totalKpiIp > 0 ? ((totalHseTag / totalKpiIp) * 100).toFixed(1) : 0 }}%</p>
+      </div>
+    </div>
+
+    <!-- Global Chart -->
+    <h3 class="text-xl font-semibold">Courbe Globale de KPI IP</h3>
+    <div class="chart-container">
+      <canvas #kpiIpGlobalChart *ngIf="!loading.kpiIp && !error.kpiIp && globalChartData.kpiIp.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.kpiIp && !error.kpiIp && !globalChartData.kpiIp.labels?.length">
+        Aucune donnée disponible pour la courbe globale de KPI IP.
+      </div>
+      <div class="text-center" *ngIf="loading.kpiIp">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.kpiIp">{{ error.kpiIp }}</div>
+    </div>
+
+    <!-- Week Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.kpiIp === ''}" (click)="selectWeekFilter('kpiIp', '')">Tous</button>
+      <button *ngFor="let week of filteredWeeks.kpiIp; trackBy: trackByWeek" class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.kpiIp === week}" (click)="selectWeekFilter('kpiIp', week)">{{ week }} (IP)</button>
+      <button *ngFor="let week of filteredWeeks.hseTag; trackBy: trackByWeek" class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.kpiIp === week + '_hseTag'}" (click)="selectWeekFilter('kpiIp', week + '_hseTag')">{{ week }} (HSE Tag)</button>
+    </div>
+
+    <!-- Global Analyses -->
+    <h3 class="text-xl font-semibold">📋 Toutes les analyses liées à KPI IP</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('KPI IP').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <div *ngFor="let analyse of getAnalysesFor('KPI IP'); trackBy: trackByAnalyse">
+        <p>📄 {{ analyse.probleme }} [Semaine {{ analyse.semaine || 'Non défini' }}]</p>
+      </div>
+      <button class="btn btn-secondary" (click)="openAddModal('KPI IP', '')">➕ Ajouter analyse</button>
+    </div>
+
+    <!-- Per-Week Sections -->
+    <ng-container *ngFor="let week of filteredWeeks.kpiIp; trackBy: trackByWeek">
+      <div class="mt-6" *ngIf="selectedWeekFilter.kpiIp === '' || selectedWeekFilter.kpiIp === week">
+        <h3 class="text-lg font-semibold" (click)="toggleWeek('KPI IP', week)">
+          {{ openWeeks['KPI IP']?.[week] ? '🔽' : '▶️' }} {{ week }} (IP)
+        </h3>
+        <div *ngIf="openWeeks['KPI IP']?.[week]">
+          <div class="chart-container">
+            <canvas [id]="'kpiIpProgramChart_' + week"></canvas>
+          </div>
+          <h4 class="text-lg font-semibold">🔽 Analyses pour {{ week }} + KPI IP</h4>
+          <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+            <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('KPI IP', week).length">
+              😕 Aucune donnée disponible.
+            </div>
+            <div *ngFor="let analyse of getAnalysesFor('KPI IP', week); trackBy: trackByAnalyse">
+              <p>📄 {{ analyse.probleme }}</p>
+            </div>
+            <button class="btn btn-secondary" (click)="openAddModal('KPI IP', week)">➕ Ajouter analyse</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngFor="let week of filteredWeeks.hseTag; trackBy: trackByWeek">
+      <div class="mt-6" *ngIf="selectedWeekFilter.kpiIp === '' || selectedWeekFilter.kpiIp === week + '_hseTag'">
+        <h3 class="text-lg font-semibold" (click)="toggleWeek('KPI IP', week + '_hseTag')">
+          {{ openWeeks['KPI IP']?.[week + '_hseTag'] ? '🔽' : '▶️' }} {{ week }} (HSE Tag)
+        </h3>
+        <div *ngIf="openWeeks['KPI IP']?.[week + '_hseTag']">
+          <div class="chart-container">
+            <canvas [id]="'kpiIpProgramChart_' + week + '_hseTag'"></canvas>
+          </div>
+          <h4 class="text-lg font-semibold">🔽 Analyses pour {{ week }} + HSE Tag</h4>
+          <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+            <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('KPI IP', week).length">
+              😕 Aucune donnée disponible.
+            </div>
+            <div *ngFor="let analyse of getAnalysesFor('KPI IP', week); trackBy: trackByAnalyse">
+              <p>📄 {{ analyse.probleme }}</p>
+            </div>
+            <button class="btn btn-secondary" (click)="openAddModal('KPI IP', week)">➕ Ajouter analyse</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Efficacité Section -->
+  <div class="mb-12" *ngIf="visibleSection === 'efficacite'">
+    <h2 class="text-xl font-semibold">Efficacité</h2>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>Semaine</label>
+        <select [(ngModel)]="selectedWeek.efficacite" (change)="applyFilters('efficacite')">
+          <option value="">Toutes les Semaines</option>
+          <option *ngFor="let week of filteredWeeks.efficacite; trackBy: trackByWeek" [value]="week">{{ week }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.efficacite" (change)="applyFilters('efficacite')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.efficacite" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.efficacite" (change)="applyFilters('efficacite')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.efficacite" (change)="applyFilters('efficacite')" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('efficacite')">Réinitialiser</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card" *ngFor="let stat of efficaciteStats">
+        <h3>{{ stat.title }} <span class="trend-icon">{{ getTrendIcon(stat.trend) }}</span></h3>
+        <p>{{ stat.value }} {{ stat.unit }}</p>
+      </div>
+    </div>
+
+    <!-- Global Chart -->
+    <h3 class="text-xl font-semibold">Courbe Globale de Efficacité</h3>
+    <div class="chart-container">
+      <canvas #efficaciteGlobalChart *ngIf="!loading.efficacite && !error.efficacite && globalChartData.efficacite.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.efficacite && !error.efficacite && !globalChartData.efficacite.labels?.length">
+        Aucune donnée disponible pour la courbe globale de Efficacité.
+      </div>
+      <div class="text-center" *ngIf="loading.efficacite">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.efficacite">{{ error.efficacite }}</div>
+    </div>
+
+    <!-- Week Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.efficacite === ''}" (click)="selectWeekFilter('efficacite', '')">Tous</button>
+      <button *ngFor="let week of filteredWeeks.efficacite; trackBy: trackByWeek" class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.efficacite === week}" (click)="selectWeekFilter('efficacite', week)">{{ week }}</button>
+    </div>
+
+    <!-- Global Analyses -->
+    <h3 class="text-xl font-semibold">📋 Toutes les analyses liées à Efficacité</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Efficacité').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <div *ngFor="let analyse of getAnalysesFor('Efficacité'); trackBy: trackByAnalyse">
+        <p>📄 {{ analyse.probleme }} [Semaine {{ analyse.semaine || 'Non défini' }}]</p>
+      </div>
+      <button class="btn btn-secondary" (click)="openAddModal('Efficacité', '')">➕ Ajouter analyse</button>
+    </div>
+
+    <!-- Per-Week Sections -->
+    <ng-container *ngFor="let week of filteredWeeks.efficacite; trackBy: trackByWeek">
+      <div class="mt-6" *ngIf="selectedWeekFilter.efficacite === '' || selectedWeekFilter.efficacite === week">
+        <h3 class="text-lg font-semibold" (click)="toggleWeek('Efficacité', week)">
+          {{ openWeeks['Efficacité']?.[week] ? '🔽' : '▶️' }} {{ week }}
+        </h3>
+        <div *ngIf="openWeeks['Efficacité']?.[week]">
+          <div class="chart-container">
+            <canvas [id]="'efficaciteProgramChart_' + week"></canvas>
+          </div>
+          <h4 class="text-lg font-semibold">🔽 Analyses pour {{ week }} + Efficacité</h4>
+          <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+            <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('Efficacité', week).length">
+              😕 Aucune donnée disponible.
+            </div>
+            <div *ngFor="let analyse of getAnalysesFor('Efficacité', week); trackBy: trackByAnalyse">
+              <p>📄 {{ analyse.probleme }}</p>
+            </div>
+            <button class="btn btn-secondary" (click)="openAddModal('Efficacité', week)">➕ Ajouter analyse</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- OTD Section -->
+  <div class="mb-12" *ngIf="visibleSection === 'otd'">
+    <h2 class="text-xl font-semibold">OTD</h2>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <div>
+        <label>Semaine</label>
+        <select [(ngModel)]="selectedWeek.otd" (change)="applyFilters('otd')">
+          <option value="">Toutes les Semaines</option>
+          <option *ngFor="let week of filteredWeeks.otd; trackBy: trackByWeek" [value]="week">{{ week }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Pilote</label>
+        <select [(ngModel)]="selectedPilote.otd" (change)="applyFilters('otd')">
+          <option value="">Tous les Pilotes</option>
+          <option *ngFor="let pilote of uniquePilotes.otd" [value]="pilote">{{ pilote }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filterStartDate.otd" (change)="applyFilters('otd')" />
+      </div>
+      <div>
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filterEndDate.otd" (change)="applyFilters('otd')" />
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters('otd')">Réinitialiser</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card" *ngFor="let stat of otdStats">
+        <h3>{{ stat.title }} <span class="trend-icon">{{ getTrendIcon(stat.trend) }}</span></h3>
+        <p>{{ stat.value }} {{ stat.unit }}</p>
+      </div>
+    </div>
+
+    <!-- Global Chart -->
+    <h3 class="text-xl font-semibold">Courbe Globale de OTD</h3>
+    <div class="chart-container">
+      <canvas #otdGlobalChart *ngIf="!loading.otd && !error.otd && globalChartData.otd.labels?.length"></canvas>
+      <div class="text-center text-gray-500" *ngIf="!loading.otd && !error.otd && !globalChartData.otd.labels?.length">
+        Aucune donnée disponible pour la courbe globale de OTD.
+      </div>
+      <div class="text-center" *ngIf="loading.otd">⏳ Chargement...</div>
+      <div class="text-center text-red-500" *ngIf="error.otd">{{ error.otd }}</div>
+    </div>
+
+    <!-- Week Selection Buttons -->
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      <button class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.otd === ''}" (click)="selectWeekFilter('otd', '')">Tous</button>
+      <button *ngFor="let week of filteredWeeks.otd; trackBy: trackByWeek" class="btn btn-primary" [ngClass]="{'btn-active': selectedWeekFilter.otd === week}" (click)="selectWeekFilter('otd', week)">{{ week }}</button>
+    </div>
+
+    <!-- Global Analyses -->
+    <h3 class="text-xl font-semibold">📋 Toutes les analyses liées à OTD</h3>
+    <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+      <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('OTD').length">
+        😕 Aucune donnée disponible.
+      </div>
+      <div *ngFor="let analyse of getAnalysesFor('OTD'); trackBy: trackByAnalyse">
+        <p>📄 {{ analyse.probleme }} [Semaine {{ analyse.semaine || 'Non défini' }}]</p>
+      </div>
+      <button class="btn btn-secondary" (click)="openAddModal('OTD', '')">➕ Ajouter analyse</button>
+    </div>
+
+    <!-- Per-Week Sections -->
+    <ng-container *ngFor="let week of filteredWeeks.otd; trackBy: trackByWeek">
+      <div class="mt-6" *ngIf="selectedWeekFilter.otd === '' || selectedWeekFilter.otd === week">
+        <h3 class="text-lg font-semibold" (click)="toggleWeek('OTD', week)">
+          {{ openWeeks['OTD']?.[week] ? '🔽' : '▶️' }} {{ week }}
+        </h3>
+        <div *ngIf="openWeeks['OTD']?.[week]">
+          <div class="chart-container">
+            <canvas [id]="'otdProgramChart_' + week"></canvas>
+          </div>
+          <h4 class="text-lg font-semibold">🔽 Analyses pour {{ week }} + OTD</h4>
+          <div class="mb-4" *ngIf="!loading.analyse; else loadingAnalyse">
+            <div class="text-center text-gray-500" *ngIf="!getAnalysesFor('OTD', week).length">
+              😕 Aucune donnée disponible.
+            </div>
+            <div *ngFor="let analyse of getAnalysesFor('OTD', week); trackBy: trackByAnalyse">
+              <p>📄 {{ analyse.probleme }}</p>
+            </div>
+            <button class="btn btn-secondary" (click)="openAddModal('OTD', week)">➕ Ajouter analyse</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Add Modal -->
+  <div class="popup-backdrop" *ngIf="showAddModal">
+    <div class="popup-window">
+      <div class="popup-header">
+        <span>Ajouter une nouvelle analyse</span>
+        <button class="close-btn" (click)="closeAddModal()">✕</button>
+      </div>
+      <div class="popup-content">
+        <form>
+          <label>Date :</label>
+          <input type="date" [(ngModel)]="newAnalyse.date" name="date" />
+          <label>Semaine :</label>
+          <input type="number" [(ngModel)]="newAnalyse.semaine" name="semaine" />
+          <label>Indicateur :</label>
+          <input type="text" [(ngModel)]="newAnalyse.indicateur" name="indicateur" readonly />
+          <label>Problème :</label>
+          <input type="text" [(ngModel)]="newAnalyse.probleme" name="probleme" />
+          <label>Pourquoi :</label>
+          <textarea [(ngModel)]="newAnalyse.pourquoi" name="pourquoi"></textarea>
+          <p>Plan d'Action</p>
+          <label>Action :</label>
+          <input type="text" [(ngModel)]="newAnalyse.planAction.action" name="action" />
+          <label>Pilote :</label>
+          <input type="text" [(ngModel)]="newAnalyse.planAction.pilote" name="pilote" />
+          <label>Délai :</label>
+          <input type="date" [(ngModel)]="newAnalyse.planAction.delai" name="delai" />
+          <label>Statut :</label>
+          <select [(ngModel)]="newAnalyse.planAction.statut" name="statut">
+            <option value="NOT_STARTED">Not Started</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+          <div class="form-buttons">
+            <button type="button" class="cancel-btn" (click)="closeAddModal()">Annuler</button>
+            <button type="button" class="submit-btn" (click)="addAnalyse()">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Template -->
+  <ng-template #loadingAnalyse>
+    <div class="text-center">⏳ Chargement...</div>
+  </ng-template>
+</div>
