@@ -1,27 +1,67 @@
-# Front
+# QRQC Dashboard Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.11.
+This project is the frontend for the QRQC (Quick Response Quality Control) dashboard, designed to monitor and manage action plans for industrial KPIs such as Qualité, Coût, and Délai. Built with Angular, it provides interactive charts, filtering, and CRUD operations for KPI analyses and action plans.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- 📊 **Dashboard**: Visualize KPIs (Qualité, Coût, Délai) with global and per-program charts using Chart.js.
+- 📝 **Action Plans**: Add, view, and manage action plans for each KPI and program.
+- 🔍 **Filtering**: Filter data by KPI, pilot, and date range for detailed analysis.
+- 📈 **Statistics**: View average results and trends for each KPI category.
+- 🛡️ **Authentication**: Secure access to dashboard features (if backend is configured).
+- ⚡ **Responsive UI**: Modern, mobile-friendly design using Tailwind CSS.
 
-## Code scaffolding
+## Technologies
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- **Angular** (TypeScript)
+- **Chart.js** (with chartjs-plugin-datalabels)
+- **RxJS**
+- **Tailwind CSS**
 
-## Build
+## Getting Started
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Prerequisites
+- Node.js (v16+ recommended)
+- Angular CLI
 
-## Running unit tests
+### Installation
+```bash
+npm install
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Running the App
+```bash
+ng serve
+```
+Visit [http://localhost:4200](http://localhost:4200) in your browser.
 
-## Running end-to-end tests
+## Project Structure
+```
+front/
+  src/
+    app/
+      components/
+        monitoring/        # Main dashboard component
+        ...                # Other feature components
+      services/            # API and business logic
+      models/              # TypeScript interfaces
+    assets/                # Images and icons
+    environments/          # Environment configs
+  angular.json             # Angular config
+  package.json             # Dependencies
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## API & Backend
+This frontend is designed to work with a QRQC backend (REST API). Configure API endpoints in `src/environments/environment.ts`.
 
-## Further help
+## Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## License
+MIT
+
+## Author
+Jihed Oueslati
+
+---
+For more information, see the code comments and documentation in each component.
